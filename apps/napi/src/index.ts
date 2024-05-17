@@ -34,7 +34,7 @@ app.use("/secured/*", async (ctx, next) => {
   await next();
 })
 
-const secured = new Hono<Env>();
+const secured = new Hono<Env>().basePath("/secured");
 
 secured.get("/whoami", async (ctx) => {
   return ctx.json(ctx.get("user"));
@@ -46,7 +46,7 @@ const routes = app.get('/', (c) => {
   })
 })
   .route("/", usersRoutes)
-  .route("/secured", secured)
+  .route("/", secured)
 
 
 export type BackendRoutes = typeof routes
