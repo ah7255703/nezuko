@@ -30,9 +30,9 @@ export type JWTPayload = {
 }
 
 class AuthService {
-    secretKey: string;
-    jwtTokenExpiry: string;
-    refreshTokenExpiry: string;
+    private secretKey: string;
+    private jwtTokenExpiry: string;
+    private refreshTokenExpiry: string;
 
     constructor() {
         this.secretKey = env.JWT_SECRET_KEY;
@@ -46,6 +46,50 @@ class AuthService {
 
     generateRefreshToken(payload: JWTPayload) {
         return jwt.sign(payload, this.secretKey, { expiresIn: this.refreshTokenExpiry });
+    }
+
+    async validateJwtToken(token: string) {
+        try {
+            const payload = jwt.verify(token, this.secretKey) as JWTPayload;
+            return payload;
+        } catch (error) {
+            if (error instanceof jwt.JsonWebTokenError) {
+                throw new InvalidTokenError();
+            }
+            throw error;
+        }
+    }
+
+    async validateRefreshToken(token: string) {
+        try {
+            const payload = jwt.verify(token, this.secretKey) as JWTPayload;
+            return payload;
+        } catch (error) {
+            if (error instanceof jwt.JsonWebTokenError) {
+                throw new InvalidTokenError();
+            }
+            throw error;
+        }
+    }
+
+    async refreshToken(refreshToken: string) {
+        const payload = await this.validateRefreshToken(refreshToken);
+        const userId = payload.userId;
+        const role = payload.role;
+        const image = payload.image;
+        const name = payload.name;
+        const newPayload: JWTPayload = {
+            userId,
+            role,
+            image,
+            name
+        }
+        return this.generateJwtToken(newPayload);
+    }
+
+    async jwtPayload(token: string) {
+        const payload = await this.validateJwtToken(token);
+        return payload;
     }
 }
 
