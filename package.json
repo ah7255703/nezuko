@@ -12,7 +12,8 @@
     "test": "turbo run test",
     "compose": "docker-compose up -d",
     "db:gen": "env-cmd -- pnpm -F napi generate",
-    "db:mig": "env-cmd -- pnpm -F napi migrate"
+    "db:mig": "env-cmd -- pnpm -F napi migrate",
+    "db:studio": "env-cmd -- pnpm -F napi studio"
   },
   "dependencies": {
     "env-cmd": "^10.1.0"

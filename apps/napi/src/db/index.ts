@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
+import pg from "pg";
 import { env } from "../env.js";
 import * as schema from './schema';
 
-export const conn = new Client({
+export const conn = new pg.Client({
     connectionString: env.PG_DB_URL,
 });
 
@@ -13,4 +13,5 @@ export const conn = new Client({
 
 export const db = drizzle(conn, {
     schema: schema,
+    logger: true,
 });

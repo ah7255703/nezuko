@@ -1,8 +1,7 @@
-import { sql, InferInsertModel, lt } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { pgEnum, pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
-import z from 'zod';
 import { uuid } from 'drizzle-orm/pg-core';
 
 export const userRole = pgEnum("user_role", [
@@ -25,7 +24,7 @@ export const creationMethod = pgEnum("creation_method", [
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 256 }).notNull(),
-    email: varchar('email', { length: 256 }),
+    email: varchar('email', { length: 256 }).unique().notNull(),
     role: userRole('role').notNull().default("user"),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
@@ -52,13 +51,19 @@ export const resetPasswordToken = pgTable('reset_password_token', {
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
-    profile: one(profile),
+    profile: one(profile, {
+        fields: [users.id],
+        references: [profile.userId],
+    }),
     resetPasswordTokens: many(resetPasswordToken),
 }));
 
-
-
-// Zod schemas
+export const resetPasswordTokensRelations = relations(resetPasswordToken, ({ one, many }) => ({
+    user: one(users, {
+        fields: [resetPasswordToken.userId],
+        references: [users.id],
+    }),
+}));
 
 const createUserSchema = createInsertSchema(users);
 const updateUserSchema = createInsertSchema(users);

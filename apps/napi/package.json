@@ -6,7 +6,8 @@
     "build": "tsc",
     "start": "node -r esbuild-register ./src/index.ts",
     "migrate": "drizzle-kit migrate",
-    "generate": "drizzle-kit generate"
+    "generate": "drizzle-kit generate",
+    "studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",

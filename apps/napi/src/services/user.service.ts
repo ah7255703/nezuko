@@ -11,6 +11,18 @@ type CreateUser = {
     password: string;
 }
 
+export class TokenExpired extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'TokenExpired';
+    }
+}
+export class InvalidResetPasswordToken extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'InvalidResetPasswordToken';
+    }
+}
 class UserService {
     async createUser(user: CreateUser) {
         const passwordHash = await bcrypt.hash(user.password, 10);
@@ -69,14 +81,30 @@ class UserService {
     }
     async updateUserPasswordByResetPasswordToken(token: string, password: string) {
         if (await this.isResetPasswordTokenExpired(token)) {
-            throw new Error('Reset password token is expired');
+            throw new TokenExpired('Reset password token is expired');
         }
-        const query = await db.update(users).set({ password: await bcrypt.hash(password, 10) }).where(eq(resetPasswordToken.token, token)).returning().execute();
-        return query.at(0);
+        const userToken = await db.query.resetPasswordToken.findFirst({
+            where: eq(resetPasswordToken.token, token),
+            with: {
+                user: true
+            }
+        })
+        if (!userToken) {
+            throw new InvalidResetPasswordToken('Invalid reset password token');
+        }
+        const passwordHash = await bcrypt.hash(password, 10);
+        const queryResult = await db.update(users).set({ password: passwordHash }).where(eq(users.id, userToken.userId)).execute();
+        if (queryResult.rowCount === 0) {
+            throw new InvalidResetPasswordToken('Invalid reset password token');
+        }
+        await db.delete(resetPasswordToken).where(eq(resetPasswordToken.id, userToken.id)).execute();
+        return true;
     }
+
     async isResetPasswordTokenExpired(token: string) {
-        const query = await db.select().from(resetPasswordToken).where(eq(resetPasswordToken.token, token)).limit(1).execute();
-        const userToken = query.at(0);
+        const userToken = await db.query.resetPasswordToken.findFirst({
+            where: eq(resetPasswordToken.token, token),
+        })
         if (!userToken) {
             return true;
         }
@@ -84,6 +112,13 @@ class UserService {
             return true;
         }
         return false;
+    }
+
+    async createResetPasswordToken(userId: number) {
+        const query = await db.insert(resetPasswordToken).values({
+            userId,
+        }).returning().execute();
+        return query.at(0);
     }
 }
 
