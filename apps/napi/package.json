@@ -1,5 +1,6 @@
 {
   "name": "napi",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
@@ -9,15 +10,26 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
+    "@hono/zod-validator": "^0.2.1",
+    "bcrypt": "^5.1.1",
     "drizzle-orm": "^0.30.10",
+    "drizzle-zod": "^0.5.1",
     "hono": "^4.3.7",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "pg": "^8.11.5",
+    "socket.io": "^4.7.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/lodash": "^4.17.4",
     "@types/node": "^20.11.17",
     "@types/pg": "^8.11.6",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
     "drizzle-kit": "^0.21.2",
     "esbuild": "^0.20.1",
     "esbuild-register": "^3.5.0",

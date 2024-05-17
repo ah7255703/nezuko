@@ -11,8 +11,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "compose": "docker-compose up -d",
-    "db:generate": "env-cmd -- pnpm -F napi generate",
-    "db:migrate": "env-cmd -- pnpm -F napi migrate"
+    "db:gen": "env-cmd -- pnpm -F napi generate",
+    "db:mig": "env-cmd -- pnpm -F napi migrate"
   },
   "dependencies": {
     "env-cmd": "^10.1.0"

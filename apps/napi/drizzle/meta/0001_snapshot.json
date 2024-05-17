@@ -1,6 +1,6 @@
 {
-  "id": "8ae7453d-a411-4256-b3ec-3c9af0f225a1",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b0ea4434-9bc0-49f7-9b9a-0f4a7aa54170",
+  "prevId": "8ae7453d-a411-4256-b3ec-3c9af0f225a1",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -40,10 +40,93 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'system'"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "profile_user_id_users_id_fk": {
+          "name": "profile_user_id_users_id_fk",
+          "tableFrom": "profile",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.reset_password_token": {
+      "name": "reset_password_token",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now() + interval '1 day'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reset_password_token_user_id_users_id_fk": {
+          "name": "reset_password_token_user_id_users_id_fk",
+          "tableFrom": "reset_password_token",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -61,7 +144,7 @@
           "name": "name",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "email": {
           "name": "email",
@@ -96,34 +179,31 @@
           "primaryKey": false,
           "notNull": false
         },
-        "profile_id": {
-          "name": "profile_id",
-          "type": "serial",
+        "creation_method": {
+          "name": "creation_method",
+          "type": "creation_method",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'email-password'"
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "users_profile_id_profile_id_fk": {
-          "name": "users_profile_id_profile_id_fk",
-          "tableFrom": "users",
-          "tableTo": "profile",
-          "columnsFrom": [
-            "profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }
   },
   "enums": {
+    "public.creation_method": {
+      "name": "creation_method",
+      "schema": "public",
+      "values": [
+        "email-password",
+        "social",
+        "email-only"
+      ]
+    },
     "public.theme": {
       "name": "theme",
       "schema": "public",
