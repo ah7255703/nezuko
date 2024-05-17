@@ -1,6 +1,18 @@
 version: "3"
 
 services:
+  pg:
+    container_name: pg
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - app_network
   web:
     container_name: web
     build:
@@ -21,9 +33,16 @@ services:
       - 3001:3001
     networks:
       - app_network
-
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
+  napi:
+    container_name: napi
+    build:
+      context: .
+      dockerfile: ./apps/napi/Dockerfile
+    restart: always
+    ports:
+      - 3002:3002
+    networks:
+      - app_network
 networks:
   app_network:
     external: true
