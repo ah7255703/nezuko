@@ -3,16 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "env-cmd turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev",
-    "start": "turbo run start",
+    "dev": "env-cmd turbo run dev",
+    "start": "env-cmd turbo run start",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "compose": "docker-compose up -d"
+    "compose": "docker-compose up -d",
+    "db:generate": "env-cmd -- pnpm -F napi generate",
+    "db:migrate": "env-cmd -- pnpm -F napi migrate"
   },
-  "dependencies": {},
+  "dependencies": {
+    "env-cmd": "^10.1.0"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "prettier": "^3.2.5",

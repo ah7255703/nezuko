@@ -3,17 +3,24 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node -r esbuild-register ./src/index.ts"
+    "start": "node -r esbuild-register ./src/index.ts",
+    "migrate": "drizzle-kit migrate",
+    "generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
-    "hono": "^4.3.7"
+    "drizzle-orm": "^0.30.10",
+    "hono": "^4.3.7",
+    "pg": "^8.11.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^20.11.17",
+    "@types/pg": "^8.11.6",
+    "drizzle-kit": "^0.21.2",
     "esbuild": "^0.20.1",
-    "esbuild-register": "^3.5.0"
+    "esbuild-register": "^3.5.0",
+    "tsx": "^4.7.1"
   }
 }

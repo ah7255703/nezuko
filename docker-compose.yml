@@ -13,36 +13,35 @@ services:
       - 5432:5432
     networks:
       - app_network
-  web:
-    container_name: web
-    build:
-      context: .
-      dockerfile: ./apps/web/Dockerfile
-    restart: always
-    ports:
-      - 3000:3000
-    networks:
-      - app_network
-  api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: ./apps/api/Dockerfile
-    restart: always
-    ports:
-      - 3001:3001
-    networks:
-      - app_network
-  napi:
-    container_name: napi
-    build:
-      context: .
-      dockerfile: ./apps/napi/Dockerfile
-    restart: always
-    ports:
-      - 3002:3002
-    networks:
-      - app_network
+  # web:
+  #   container_name: web
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/web/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app_network
+  # api:
+  #   container_name: api
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3001:3001
+  #   networks:
+  #     - app_network
+  # napi:
+    # container_name: napi
+    # build:
+    #   context: .
+    #   dockerfile: ./apps/napi/Dockerfile
+    # restart: always
+    # ports:
+    #   - 3002:3002
+    # networks:
+    #   - app_network
 networks:
   app_network:
-    external: true
