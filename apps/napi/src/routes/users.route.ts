@@ -38,6 +38,8 @@ const route = new Hono().basePath('/credentials')
             role: user.role,
             image: user.profile?.image ?? null,
             name: user.name,
+            email: user.email,
+            allowedResources: "all"
         });
 
         const refreshToken = authService.generateRefreshToken({
@@ -45,6 +47,8 @@ const route = new Hono().basePath('/credentials')
             role: user.role,
             image: user.profile?.image ?? null,
             name: user.name,
+            email: user.email,
+            allowedResources: "all"
         });
 
         return ctx.json({

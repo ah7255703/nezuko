@@ -27,6 +27,8 @@ export type JWTPayload = {
     role: typeof users.$inferInsert['role'];
     image: string | null;
     name: string;
+    email: string;
+    allowedResources: string[] | "all"
 }
 
 class AuthService {
@@ -74,17 +76,7 @@ class AuthService {
 
     async refreshToken(refreshToken: string) {
         const payload = await this.validateRefreshToken(refreshToken);
-        const userId = payload.userId;
-        const role = payload.role;
-        const image = payload.image;
-        const name = payload.name;
-        const newPayload: JWTPayload = {
-            userId,
-            role,
-            image,
-            name
-        }
-        return this.generateJwtToken(newPayload);
+        return this.generateJwtToken(payload);
     }
 
     async jwtPayload(token: string) {

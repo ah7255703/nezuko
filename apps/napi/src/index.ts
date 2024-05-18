@@ -5,17 +5,28 @@ import usersRoutes from './routes/users.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
 import { authService } from './services/auth.service.js'
+import { HTTPException } from 'hono/http-exception'
 
-const app = new Hono<Env>();
+const app = new Hono<Env>({
+  strict: true,
+});
 
 app.use(logger())
+
+class JWTConfig {
+  static tokenStrings = '[A-Za-z0-9._~+/-]+=*'
+  static PREFIX = 'Bearer'
+  static prefix = "Bearer"
+  static header = 'Authorization'
+  static realm = "Secured API"
+}
 
 app.use(async (ctx, next) => {
   ctx.set("user", null);
   const authorization = ctx.req.header('authorization');
-  console.log("authorization", authorization)
   if (authorization) {
-    const [, token] = authorization.split('  ');
+    // split by space wether 2 or one space or more
+    const [scheme, token] = authorization.split(' ');
     try {
       const payload = await authService.jwtPayload(token);
       ctx.set("user", payload);
@@ -27,9 +38,16 @@ app.use(async (ctx, next) => {
   await next();
 })
 
+
 app.use("/secured/*", async (ctx, next) => {
   if (ctx.get("user") === null) {
-    return ctx.json({ message: "Unauthorized" }, 401);
+    const res = new Response('Unauthorized', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': `${JWTConfig.prefix} realm="` + JWTConfig.realm + '"',
+      },
+    })
+    throw new HTTPException(401, { res });
   }
   await next();
 })
