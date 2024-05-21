@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { logger } from 'hono/logger'
 import usersRoutes from './routes/users.route.js'
+import projectRoute from './routes/project.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
 import { authService } from './services/auth.service.js'
@@ -57,6 +58,8 @@ const secured = new Hono<Env>().basePath("/secured");
 secured.get("/whoami", async (ctx) => {
   return ctx.json(ctx.get("user"));
 })
+
+secured.route("/project", projectRoute)
 
 const routes = app.get('/', (c) => {
   return c.json({

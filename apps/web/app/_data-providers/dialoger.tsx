@@ -3,8 +3,8 @@ import { ReactNode, useMemo } from "react";
 import { Store, useStore } from "@/lib/store";
 import _ from "lodash";
 import { createSafeContext } from "@/utils/create-safe-context";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@df/ui/alert-dialog";
-import { Button } from "@df/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 type Dialog = {
     id: string

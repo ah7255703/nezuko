@@ -4,8 +4,9 @@ import { z } from "zod";
 import { InvalidResetPasswordToken, TokenExpired, userService } from "../services/user.service.js";
 import { authService } from "../services/auth.service.js";
 import _ from "lodash";
+import { Env } from "../types.js";
 
-const route = new Hono().basePath('/credentials')
+const route = new Hono<Env>().basePath('/credentials')
     .post("/register",
         zValidator("json", z.object({
             name: z.string(),
@@ -74,6 +75,24 @@ const route = new Hono().basePath('/credentials')
                 token: _.omit(resetPasswordToken, ['token', "userId", "id"]),
             });
         })
+
+    .post("/validate-email", zValidator("json", z.object({
+        token: z.string(),
+    })), async (ctx) => {
+        const { token } = ctx.req.valid('json');
+        const validate = await userService.verifyEmail(token);
+
+        if (!validate) {
+            return ctx.json({
+                error: 'Invalid token',
+            }, 401);
+        }
+
+        return ctx.json({
+            message: 'Email verified',
+        });
+    }
+    )
     .post("/reset-password/confirm",
         zValidator("json", z.object({
             token: z.string(),
