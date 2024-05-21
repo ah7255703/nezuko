@@ -56,6 +56,7 @@ const route = new Hono().basePath('/credentials')
             refresh: refreshToken,
         });
     })
+
     .post("/reset-password",
         zValidator("json", z.object({
             email: z.string().email(),

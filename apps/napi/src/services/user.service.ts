@@ -1,9 +1,12 @@
 import bcrypt from 'bcrypt';
-import { profile, resetPasswordToken, updateUserSchema, users } from '@db/schema/index.js';
+import { profile, resetPasswordToken, updateUserSchema, users, verifyEmailToken } from '@db/schema/index.js';
 import { db } from '@db/index.js';
 import _ from 'lodash';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import z from 'zod';
+import { mailService } from './email.service';
+import { render } from '@react-email/render';
+import VerifyEmail from '../emails/test';
 
 type CreateUser = {
     name: string;
@@ -26,12 +29,14 @@ export class InvalidResetPasswordToken extends Error {
 class UserService {
     async createUser(user: CreateUser) {
         const passwordHash = await bcrypt.hash(user.password, 10);
+
         const query = await db.insert(users).values({
             name: user.name,
             email: user.email,
             password: passwordHash,
             creationMethod: "email-password",
-        }).returning().execute()
+        }).returning().execute();
+
         const newUser = query.at(0);
         if (!newUser) {
             throw new Error('User not created');
@@ -39,6 +44,13 @@ class UserService {
         const userProfile = await db.insert(profile).values({
             userId: newUser.id,
         })
+        if (newUser.creationMethod === 'email-password' || newUser.creationMethod === 'email-only') {
+            this.sendVerificationEmail({
+                email: newUser.email,
+                name: newUser.name,
+                userId: newUser.id,
+            })
+        }
         return _.omit(newUser, ['password']);
     }
     async getUser(email: string, password: string) {
@@ -119,6 +131,47 @@ class UserService {
             userId,
         }).returning().execute();
         return query.at(0);
+    }
+    async verifyEmail(token: string) {
+        const c = await db.query.verifyEmailToken.findFirst({
+            where: eq(verifyEmailToken.token, token),
+            with: {
+                user: true
+            }
+        })
+        if (!c) {
+            return false;
+        }
+        await db.update(users).set({
+            verifiedEmail: true,
+            verifiedEmailAt: sql`now()`
+        }).where(eq(users.id, c.userId)).execute();
+        await db.delete(verifyEmailToken).where(eq(verifyEmailToken.id, c.id)).execute();
+        return true;
+    }
+    async sendVerificationEmail({ email, userId, name }: {
+        userId: number,
+        email: string,
+        name: string;
+    }) {
+        let query = await db.insert(verifyEmailToken).values({
+            userId,
+        }).returning().execute();
+        let token = query.at(0);
+        if (!token) {
+            throw Error("Failed to create token")
+        }
+        const verifyUrl = "http://localhost:3000/api/auth/verify-email?token=" + token.token;
+        const emailString = render(VerifyEmail({
+            name,
+            verificationUrl: verifyUrl
+        }))
+        mailService.ts.sendMail({
+            html: emailString,
+            from: 'wmequlfp@mailosaur.net',
+            to: email,
+            subject: 'hello world',
+        })
     }
 }
 

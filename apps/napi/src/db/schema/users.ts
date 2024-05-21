@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, serial, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { uuid } from 'drizzle-orm/pg-core';
@@ -30,6 +30,8 @@ export const users = pgTable('users', {
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
     password: varchar('password', { length: 256 }),
     creationMethod: creationMethod('creation_method').notNull().default("email-password"),
+    verifiedEmailAt: timestamp('verified_email_at'),
+    verifiedEmail: boolean('verified_email').notNull().default(false)
 });
 
 export const profile = pgTable('profile', {
@@ -38,12 +40,21 @@ export const profile = pgTable('profile', {
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
     image: varchar('image_url', { length: 256 }),
     theme: theme('theme').notNull().default("system"),
-    userId: serial('user_id').notNull().references(() => users.id),
+    userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const resetPasswordToken = pgTable('reset_password_token', {
     id: serial('id').primaryKey(),
-    userId: serial('user_id').notNull().references(() => users.id),
+    userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    token: uuid("token").defaultRandom(),
+    createdAt: timestamp('created_at').notNull().default(sql`now()`),
+    updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
+    expiresAt: timestamp('expires_at').notNull().default(sql`now() + interval '1 day'`),
+});
+
+export const verifyEmailToken = pgTable('verify_email_token', {
+    id: serial('id').primaryKey(),
+    userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
     token: uuid("token").defaultRandom(),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
@@ -56,11 +67,19 @@ export const usersRelations = relations(users, ({ one, many }) => ({
         references: [profile.userId],
     }),
     resetPasswordTokens: many(resetPasswordToken),
+    verifyEmailTokens: many(verifyEmailToken),
 }));
 
 export const resetPasswordTokensRelations = relations(resetPasswordToken, ({ one, many }) => ({
     user: one(users, {
         fields: [resetPasswordToken.userId],
+        references: [users.id],
+    }),
+}));
+
+export const verifyEmailTokensRelations = relations(verifyEmailToken, ({ one, many }) => ({
+    user: one(users, {
+        fields: [verifyEmailToken.userId],
         references: [users.id],
     }),
 }));

@@ -22,6 +22,34 @@
       "when": 1715969569440,
       "tag": "0002_kind_vin_gonzales",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1716309199369,
+      "tag": "0003_slimy_husk",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1716309795237,
+      "tag": "0004_curved_true_believers",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1716314281299,
+      "tag": "0005_dear_silver_surfer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1716314453097,
+      "tag": "0006_productive_skrulls",
+      "breakpoints": true
     }
   ]
 }

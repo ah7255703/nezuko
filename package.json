@@ -19,7 +19,7 @@
     "env-cmd": "^10.1.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@nezuko/eslint-config": "workspace:*",
     "prettier": "^3.2.5",
     "turbo": "latest"
   },

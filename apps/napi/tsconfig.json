@@ -1,9 +1,10 @@
 {
-  "extends": "@repo/typescript-config/base.json",
+  "extends": "@nezuko/typescript-config/base.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler",
-    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "module": "ES2015",
+    "jsx": "preserve",
     "esModuleInterop": true,
     "lib": [
       "ES2015"

@@ -1,5 +1,5 @@
 {
-  "name": "@repo/jest-presets",
+  "name": "@nezuko/jest-presets",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",

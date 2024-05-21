@@ -1,11 +1,22 @@
 {
-  "extends": "@repo/typescript-config/base.json",
+  "extends": "@nezuko/typescript-config/base.json",
   "compilerOptions": {
-    "lib": ["ES2015", "DOM"],
+    "lib": [
+      "ES2015",
+      "DOM"
+    ],
+    "jsx": "react-jsx",
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
