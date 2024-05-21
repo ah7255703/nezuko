@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { env } from '../env.js';
-import { users } from '@db/schema/users.js';
+import { user } from '@db/schema';
+
 class AuthError extends Error {
     constructor(message: string) {
         super(message);
@@ -24,7 +25,7 @@ class InvalidTokenError extends AuthError {
 
 export type JWTPayload = {
     userId: number;
-    role: typeof users.$inferInsert['role'];
+    role: typeof user.$inferInsert['role'];
     image: string | null;
     name: string;
     email: string;

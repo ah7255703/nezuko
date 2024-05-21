@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { profile, resetPasswordToken, updateUserSchema, users, verifyEmailToken } from '@db/schema/index.js';
+import { profile, resetPasswordToken, updateUserSchema, user, verifyEmailToken } from '@db/schema';
 import { db } from '@db/index.js';
 import _ from 'lodash';
 import { eq, sql } from 'drizzle-orm';
@@ -27,12 +27,12 @@ export class InvalidResetPasswordToken extends Error {
     }
 }
 class UserService {
-    async createUser(user: CreateUser) {
-        const passwordHash = await bcrypt.hash(user.password, 10);
+    async createUser(data: CreateUser) {
+        const passwordHash = await bcrypt.hash(data.password, 10);
 
-        const query = await db.insert(users).values({
-            name: user.name,
-            email: user.email,
+        const query = await db.insert(user).values({
+            name: data.name,
+            email: data.email,
             password: passwordHash,
             creationMethod: "email-password",
         }).returning().execute();
@@ -54,16 +54,16 @@ class UserService {
         return _.omit(newUser, ['password']);
     }
     async getUser(email: string, password: string) {
-        const user = await db.query.users.findFirst({
-            where: eq(users.email, email),
+        const result = await db.query.user.findFirst({
+            where: eq(user.email, email),
             with: {
                 profile: true
             }
         })
-        if (!user) {
+        if (!result) {
             return null;
         }
-        const isValid = bcrypt.compare(password, user.password!); // TODO: check if password is null
+        const isValid = bcrypt.compare(password, result.password!); // TODO: check if password is null
 
         if (!isValid) {
             return null;
@@ -71,18 +71,22 @@ class UserService {
 
         return _.omit(user, ['password']);
     }
-    async updateUser(id: number, user: z.infer<typeof updateUserSchema>) {
-        const validatedUser = await updateUserSchema.parseAsync(user);
-        return db.update(users).set(validatedUser).where(eq(users.id, id)).execute();
+    async updateUser(id: number, data: z.infer<typeof updateUserSchema>) {
+        const validatedUser = await updateUserSchema.parseAsync(data);
+        return db.update(user).set(validatedUser).where(eq(user.id, id)).execute();
     }
+    
     async getUserByEmail(email: string) {
-        const query = await db.select().from(users).where(eq(users.email, email)).limit(1).execute();
-        const user = query.at(0);
-        if (!user) {
+        const result = await db.query.user.findFirst({
+            where: eq(user.email, email)
+        });
+
+        if (!result) {
             return null;
         }
-        return _.omit(user, ['password']);
+        return _.omit(result, ['password']);
     }
+    
     async getUserByResetPasswordToken(token: string) {
         const query = await db.select().from(resetPasswordToken).where(eq(resetPasswordToken.token, token)).limit(1).execute();
         const user = query.at(0);
@@ -91,6 +95,7 @@ class UserService {
         }
         return _.omit(user, ['password']);
     }
+
     async updateUserPasswordByResetPasswordToken(token: string, password: string) {
         if (await this.isResetPasswordTokenExpired(token)) {
             throw new TokenExpired('Reset password token is expired');
@@ -105,7 +110,7 @@ class UserService {
             throw new InvalidResetPasswordToken('Invalid reset password token');
         }
         const passwordHash = await bcrypt.hash(password, 10);
-        const queryResult = await db.update(users).set({ password: passwordHash }).where(eq(users.id, userToken.userId)).execute();
+        const queryResult = await db.update(user).set({ password: passwordHash }).where(eq(user.id, userToken.userId)).execute();
         if (queryResult.rowCount === 0) {
             throw new InvalidResetPasswordToken('Invalid reset password token');
         }
@@ -132,6 +137,7 @@ class UserService {
         }).returning().execute();
         return query.at(0);
     }
+
     async verifyEmail(token: string) {
         const c = await db.query.verifyEmailToken.findFirst({
             where: eq(verifyEmailToken.token, token),
@@ -142,13 +148,14 @@ class UserService {
         if (!c) {
             return false;
         }
-        await db.update(users).set({
+        await db.update(user).set({
             verifiedEmail: true,
             verifiedEmailAt: sql`now()`
-        }).where(eq(users.id, c.userId)).execute();
+        }).where(eq(user.id, c.userId)).execute();
         await db.delete(verifyEmailToken).where(eq(verifyEmailToken.id, c.id)).execute();
         return true;
     }
+
     async sendVerificationEmail({ email, userId, name }: {
         userId: number,
         email: string,
