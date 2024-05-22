@@ -24,7 +24,7 @@ export class InvalidTokenError extends AuthError {
 }
 
 export type JWTPayload = {
-    userId: number;
+    userId: typeof user.$inferSelect['id'];
     role: typeof user.$inferInsert['role'];
     image: string | null;
     name: string;

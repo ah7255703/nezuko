@@ -3,6 +3,7 @@ import { pgEnum, pgTable, serial, varchar, timestamp, uuid } from 'drizzle-orm/p
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { user } from './user';
+import { org } from './org';
 
 export const projectStatus = pgEnum("project_status", ["inactive", "active"])
 
@@ -13,7 +14,7 @@ export const project = pgTable("project", {
     status: projectStatus("status").notNull().default("inactive"),
     updatedAt: timestamp("updated_at").notNull().$onUpdate(() => new Date()),
     createdAt: timestamp("created_at").notNull().default(sql`now()`),
-    userId: uuid("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    userId: serial('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 })
 
 export const createProjectSchema = createInsertSchema(project)

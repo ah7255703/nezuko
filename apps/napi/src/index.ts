@@ -1,22 +1,19 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import { logger } from 'hono/logger'
 import usersRoutes from './routes/users.route.js'
-import projectRoute from './routes/project.route.js'
+import privateUsersRoutes from './routes/users.private.route.js'
+import orgsRoutes from './routes/orgs.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
 import { authService, InvalidTokenError } from './services/auth.service.js'
-import { HTTPException } from 'hono/http-exception'
+import { HTTPException } from 'hono/http-exception';
+import logger from './services/logger.service.js'
+import { cors } from 'hono/cors'
 
 const app = new Hono<Env>({
   strict: true,
 });
-
-app.use(async (ctx, next) => {
-  console.info(`[${ctx.req.method}] ${ctx.req.url} [${JSON.stringify(ctx.req.header())}]`)
-  return next()
-})
-
+app.use(cors())
 class JWTConfig {
   static tokenStrings = '[A-Za-z0-9._~+/-]+=*'
   static PREFIX = 'Bearer'
@@ -43,6 +40,7 @@ app.use(async (ctx, next) => {
     }
   }
   ctx.header("X-Authenticated", String(ctx.get("user") !== null));
+  logger.info.log("info", `[USER]:${JSON.stringify(ctx.get("user"))}`)
   await next();
 })
 
@@ -60,11 +58,10 @@ app.use("/secured/*", async (ctx, next) => {
   await next();
 })
 
-const secured = new Hono<Env>().basePath("/secured")
-.get("/whoami", async (ctx) => {
-  return ctx.json(ctx.get("user"));
-})
-.route("/project", projectRoute)
+const secured = new Hono<Env>()
+  .basePath("/secured")
+  .route("/project", orgsRoutes)
+  .route("/", privateUsersRoutes)
 
 const routes = app.get('/', (c) => {
   return c.json({
@@ -73,7 +70,6 @@ const routes = app.get('/', (c) => {
 })
   .route("/", usersRoutes)
   .route("/", secured)
-
 
 export type BackendRoutes = typeof routes
 
