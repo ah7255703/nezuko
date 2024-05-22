@@ -6,7 +6,6 @@ import { ThemeProvider } from "next-themes";
 import { AppConfigProvider } from "./_data-providers/appConfig";
 import { Dialoger, DialogerProvider } from "./_data-providers/dialoger";
 import { Toaster } from "@/components/ui/sonner";
-import { UserProvider } from "./_data-providers/UserProvider";
 
 export const metadata: Metadata = {
   title: "Nezuko",
@@ -38,9 +37,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AppConfigProvider>
             <DialogerProvider>
-              <UserProvider>
-                {children}
-              </UserProvider>
+              {children}
               <Dialoger />
             </DialogerProvider>
           </AppConfigProvider>

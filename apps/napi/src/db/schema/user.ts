@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, serial, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, serial, varchar, timestamp, boolean, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { resetPasswordToken, verifyEmailToken } from './auth';
@@ -24,7 +24,7 @@ export const creationMethod = pgEnum("creation_method", [
 ]);
 
 export const user = pgTable('users', {
-    id: serial('id').primaryKey(),
+    id: uuid('id').default(sql`gen_random_uuid()`).primaryKey(),
     name: varchar('name', { length: 256 }).notNull(),
     email: varchar('email', { length: 256 }).unique().notNull(),
     role: userRole('role').notNull().default("user"),
@@ -37,12 +37,12 @@ export const user = pgTable('users', {
 });
 
 export const profile = pgTable('profile', {
-    id: serial('id').primaryKey(),
+    id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
     image: varchar('image_url', { length: 256 }),
     theme: theme('theme').notNull().default("system"),
-    userId: serial('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 });
 
 

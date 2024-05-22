@@ -7,12 +7,12 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
 const route = new Hono<Env>()
-    .get("/", async (ctx) => {
+    .get("/getAll", async (ctx) => {
         const user = ctx.get("user")!
-        const projects = await db.query.project.findMany({
-            where: eq(project.userId, user.userId)
+        const orgs = await db.query.org.findMany({
+            where: eq(org.createdBy, user.userId)
         })
-        ctx.json(projects);
+        return ctx.json(orgs);
     })
 
     .get('/:id', async (ctx) => {

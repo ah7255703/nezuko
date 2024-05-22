@@ -5,7 +5,7 @@ import { user } from './user';
 
 export const verifyEmailToken = pgTable('verify_email_token', {
     id: serial('id').primaryKey(),
-    userId: serial('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
     token: uuid("token").defaultRandom(),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
@@ -16,7 +16,7 @@ export const verifyEmailToken = pgTable('verify_email_token', {
 
 export const resetPasswordToken = pgTable('reset_password_token', {
     id: serial('id').primaryKey(),
-    userId: serial('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
     token: uuid("token").defaultRandom(),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),

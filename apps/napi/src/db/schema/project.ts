@@ -8,13 +8,13 @@ import { org } from './org';
 export const projectStatus = pgEnum("project_status", ["inactive", "active"])
 
 export const project = pgTable("project", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 256 }).notNull(),
     description: varchar("description", { length: 256 }),
     status: projectStatus("status").notNull().default("inactive"),
     updatedAt: timestamp("updated_at").notNull().$onUpdate(() => new Date()),
     createdAt: timestamp("created_at").notNull().default(sql`now()`),
-    userId: serial('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 })
 
 export const createProjectSchema = createInsertSchema(project)

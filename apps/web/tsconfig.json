@@ -1,8 +1,12 @@
 {
   "extends": "@nezuko/typescript-config/nextjs.json",
+  "references": [
+    {
+      "path": "../napi"
+    }
+  ],
   "compilerOptions": {
     "allowJs": true,
-    "declaration": false,
     "declarationMap": false,
     "plugins": [
       {
@@ -15,7 +19,6 @@
       ]
     }
   },
-  
   "include": [
     "next-env.d.ts",
     "next.config.js",

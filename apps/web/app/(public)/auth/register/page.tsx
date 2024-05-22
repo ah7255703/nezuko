@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -9,9 +10,20 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Field, Form } from "@/components/ui/form"
+import { clientApiReq } from "@/client/client-req"
 
 export default function RegisterPage() {
+    const form = useForm({
+        resolver: zodResolver(z.object({
+            name: z.string().min(2, "Name is required"),
+            email: z.string().email("Invalid email address"),
+            password: z.string().min(8, "Password must be at least 8 characters"),
+        }))
+    })
     return (
         <Card className="mx-auto max-w-sm w-full">
             <CardHeader>
@@ -21,37 +33,50 @@ export default function RegisterPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="first-name">Name</Label>
-                        <Input id="first-name" required />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            required
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" type="password" />
-                    </div>
-                    <Button type="submit" className="w-full">
-                        Create an account
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                        Sign up with GitHub
-                    </Button>
-                </div>
-                <div className="mt-4 text-center text-sm">
-                    Already have an account?{" "}
-                    <Link href="/auth" className="underline">
-                        Sign in
-                    </Link>
-                </div>
+                <Form {...form}>
+                    <form className="contents" onSubmit={form.handleSubmit(async (data) => {
+                        const req = await clientApiReq.credentials.register.$post({
+                            json: {
+                                name: data.name,
+                                email: data.email,
+                                password: data.password,
+                            }
+                        })
+                        let resp = await req.json();
+                        console.log(resp)
+                    })}>
+                        <div className="grid gap-4">
+                            <Field
+                                control={form.control}
+                                name="name"
+                                label="Name"
+                                render={(f) => <Input {...f} type="text" />}
+                            />
+                            <Field
+                                control={form.control}
+                                name="email"
+                                label="Email"
+                                render={(f) => <Input {...f} type='email' />}
+                            />
+                            <Field
+                                control={form.control}
+                                name="password"
+                                label="Password"
+                                render={(f) => <Input {...f} type='password' />}
+                            />
+                            <Button type="submit" className="w-full">
+                                Create an account
+                            </Button>
+                        </div>
+                        <div className="mt-4 text-center text-sm">
+                            Already have an account?{" "}
+                            <Link href="/auth" className="underline">
+                                Sign in
+                            </Link>
+                        </div>
+                    </form>
+                </Form>
+
             </CardContent>
         </Card>
     )

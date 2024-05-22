@@ -71,7 +71,7 @@ class UserService {
 
         return _.omit(result, ['password']);
     }
-    async updateUser(id: number, data: z.infer<typeof updateUserSchema>) {
+    async updateUser(id: string, data: z.infer<typeof updateUserSchema>) {
         const validatedUser = await updateUserSchema.parseAsync(data);
         return db.update(user).set(validatedUser).where(eq(user.id, id)).execute();
     }
@@ -131,7 +131,7 @@ class UserService {
         return false;
     }
 
-    async createResetPasswordToken(userId: number) {
+    async createResetPasswordToken(userId: string) {
         const query = await db.insert(resetPasswordToken).values({
             userId,
         }).returning().execute();
@@ -157,7 +157,7 @@ class UserService {
     }
 
     async sendVerificationEmail({ email, userId, name }: {
-        userId: number,
+        userId: string,
         email: string,
         name: string;
     }) {
@@ -173,12 +173,12 @@ class UserService {
             name,
             verificationUrl: verifyUrl
         }))
-        mailService.ts.sendMail({
-            html: emailString,
-            from: 'wmequlfp@mailosaur.net',
-            to: email,
-            subject: 'hello world',
-        })
+        // mailService.ts.sendMail({
+        //     html: emailString,
+        //     from: 'wmequlfp@mailosaur.net',
+        //     to: email,
+        //     subject: 'hello world',
+        // })
     }
 }
 

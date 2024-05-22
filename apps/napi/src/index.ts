@@ -59,17 +59,12 @@ app.use("/secured/*", async (ctx, next) => {
 })
 
 const secured = new Hono<Env>()
-  .basePath("/secured")
-  .route("/project", orgsRoutes)
+  .route("/org", orgsRoutes)
   .route("/", privateUsersRoutes)
 
-const routes = app.get('/', (c) => {
-  return c.json({
-    message: "pong"
-  })
-})
-  .route("/", usersRoutes)
-  .route("/", secured)
+const routes = app
+  .route('/credentials', usersRoutes)
+  .route("/secured", secured)
 
 export type BackendRoutes = typeof routes
 

@@ -6,7 +6,7 @@ import { authService } from "../services/auth.service.js";
 import _ from "lodash";
 import { Env } from "../types.js";
 
-const route = new Hono<Env>().basePath('/credentials')
+const route = new Hono<Env>()
     .post("/register",
         zValidator("json", z.object({
             name: z.string(),
