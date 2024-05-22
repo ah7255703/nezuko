@@ -69,7 +69,7 @@ class UserService {
             return null;
         }
 
-        return _.omit(user, ['password']);
+        return _.omit(result, ['password']);
     }
     async updateUser(id: number, data: z.infer<typeof updateUserSchema>) {
         const validatedUser = await updateUserSchema.parseAsync(data);

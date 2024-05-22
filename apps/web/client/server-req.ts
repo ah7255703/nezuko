@@ -1,13 +1,13 @@
 import { hc } from "hono/client";
 import { BackendRoutes } from '../../napi/src/index'
-import { getSession } from "@/app/auth";
+import { getServerSession } from "@/app/auth/getServerSession";
 
 const BACKEND_URL = "http://localhost:3001/";
 
 async function getAccessToken() {
-    return getSession()
+    return getServerSession()
 }
-export const api = hc<BackendRoutes>(BACKEND_URL, {
+export const serverApiReq = hc<BackendRoutes>(BACKEND_URL, {
     async headers() {
         const accessToken = await getAccessToken();
         return {

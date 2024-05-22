@@ -9,14 +9,14 @@ class AuthError extends Error {
     }
 }
 
-class TokenExpiredError extends AuthError {
+export class TokenExpiredError extends AuthError {
     constructor() {
         super('Token expired');
         this.name = 'TokenExpiredError';
     }
 }
 
-class InvalidTokenError extends AuthError {
+export class InvalidTokenError extends AuthError {
     constructor() {
         super('Invalid token');
         this.name = 'InvalidTokenError';

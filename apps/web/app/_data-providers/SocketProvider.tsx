@@ -1,10 +1,10 @@
 'use client'
 import { Socket, io } from "socket.io-client";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
+import { ReactNode, useCallback, useEffect,  useReducer } from "react";
 import { produce } from "immer";
 import { createSafeContext } from "@/utils/create-safe-context";
-import { env } from "@/env";
 import { useSession } from 'next-auth/react';
+import { env } from "@/env.mjs";
 
 type SocketState = {
     state: "stale" | "connected" | "retrying" | "disconnected" | "error";

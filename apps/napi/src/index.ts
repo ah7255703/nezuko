@@ -5,14 +5,17 @@ import usersRoutes from './routes/users.route.js'
 import projectRoute from './routes/project.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
-import { authService } from './services/auth.service.js'
+import { authService, InvalidTokenError } from './services/auth.service.js'
 import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<Env>({
   strict: true,
 });
 
-app.use(logger())
+app.use(async (ctx, next) => {
+  console.info(`[${ctx.req.method}] ${ctx.req.url} [${JSON.stringify(ctx.req.header())}]`)
+  return next()
+})
 
 class JWTConfig {
   static tokenStrings = '[A-Za-z0-9._~+/-]+=*'
@@ -32,7 +35,11 @@ app.use(async (ctx, next) => {
       const payload = await authService.jwtPayload(token);
       ctx.set("user", payload);
     } catch (error) {
-      console.log(error)
+      if (error instanceof InvalidTokenError) {
+        ctx.header("X-Invalid-Token", "true");
+      } else {
+        console.log(error)
+      }
     }
   }
   ctx.header("X-Authenticated", String(ctx.get("user") !== null));
@@ -53,13 +60,11 @@ app.use("/secured/*", async (ctx, next) => {
   await next();
 })
 
-const secured = new Hono<Env>().basePath("/secured");
-
-secured.get("/whoami", async (ctx) => {
+const secured = new Hono<Env>().basePath("/secured")
+.get("/whoami", async (ctx) => {
   return ctx.json(ctx.get("user"));
 })
-
-secured.route("/project", projectRoute)
+.route("/project", projectRoute)
 
 const routes = app.get('/', (c) => {
   return c.json({
