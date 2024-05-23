@@ -18,10 +18,10 @@ const route = new Hono<Env>()
     .get('/:id', async (ctx) => {
         const id = ctx.req.param("id");
         const user = ctx.get("user")!
-        const _project = await db.query.project.findFirst({
-            where: and(eq(project.id, id), eq(project.userId, user.userId))
+        const _org = await db.query.org.findFirst({
+            where: and(eq(project.id, id), eq(project.createdBy, user.userId))
         })
-        ctx.json(_project)
+        ctx.json(_org)
     })
 
     .post("/create", zValidator("json",

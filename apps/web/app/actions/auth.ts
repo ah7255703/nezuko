@@ -4,6 +4,7 @@ import { action } from "./safe-action";
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { serverApiReq } from "@/client/server-req";
+import { getServerSession } from "../auth/getServerSession";
 
 const schema = z.object({
     email: z.string().email(),
@@ -14,12 +15,19 @@ export const loginUser = action.schema(schema)
     .action(async ({ parsedInput }) => {
         const resp = await serverApiReq.credentials.login.$post({ json: parsedInput });
         if (resp.ok) {
-            const data = await resp.json()
-            cookies().set("accessToken", data.token)
-            cookies().set("refreshToken", data.token)
+            const { accessToken, refreshToken } = await resp.json()
+            cookies().set("accessToken", accessToken.value, {
+                maxAge: accessToken.expires
+            })
+            cookies().set("refreshToken", refreshToken.value, {
+                maxAge: refreshToken.expires
+            })
             return {
                 success: true,
-                data,
+                data: {
+                    accessToken,
+                    refreshToken
+                }
             }
         }
         return {
@@ -32,5 +40,20 @@ export const logout = action.action(async () => {
     cookies().delete("refreshToken")
     return {
         success: true
+    }
+})
+
+export const refreshToken = action.action(async () => {
+    const tokens = await getServerSession();
+    if (tokens.refreshToken) {
+        const accessToken = await serverApiReq.credentials.token.refresh.$post({ json: { refresh: tokens.refreshToken } });
+        if (accessToken.ok) {
+            const data = await accessToken.json();
+            cookies().set("accessToken", data.accessToken)
+            return {
+                success: true,
+                data,
+            }
+        }
     }
 })

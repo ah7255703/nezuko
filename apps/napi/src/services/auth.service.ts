@@ -34,8 +34,8 @@ export type JWTPayload = {
 
 class AuthService {
     private secretKey: string;
-    private jwtTokenExpiry: string;
-    private refreshTokenExpiry: string;
+    jwtTokenExpiry: string;
+    refreshTokenExpiry: string;
 
     constructor() {
         this.secretKey = env.JWT_SECRET_KEY;

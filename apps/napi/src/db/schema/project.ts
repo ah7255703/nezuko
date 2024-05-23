@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, serial, varchar, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, varchar, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { user } from './user';
@@ -14,14 +14,19 @@ export const project = pgTable("project", {
     status: projectStatus("status").notNull().default("inactive"),
     updatedAt: timestamp("updated_at").notNull().$onUpdate(() => new Date()),
     createdAt: timestamp("created_at").notNull().default(sql`now()`),
-    userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    createdBy: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    org: uuid('org_id').notNull().references(() => org.id, { onDelete: 'cascade' }),
 })
 
 export const createProjectSchema = createInsertSchema(project)
 
 export const projectRelations = relations(project, ({ one, many }) => ({
     user: one(user, {
-        fields: [project.userId],
+        fields: [project.createdBy],
         references: [user.id],
+    }),
+    org: one(org, {
+        fields: [project.org],
+        references: [org.id],
     }),
 }));

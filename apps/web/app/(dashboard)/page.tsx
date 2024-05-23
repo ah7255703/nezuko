@@ -19,7 +19,6 @@ import AutoForm, { AutoFormSubmit } from "@/components/auto-form";
 import * as z from "zod";
 import { clientApiReq } from "@/client/client-req";
 import useSWR from "swr";
-import { Card, CardHeader } from "@/components/ui/card";
 
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),

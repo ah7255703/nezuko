@@ -5,6 +5,7 @@ import { InvalidResetPasswordToken, TokenExpired, userService } from "../service
 import { authService } from "../services/auth.service.js";
 import _ from "lodash";
 import { Env } from "../types.js";
+import ms from 'ms'
 
 const route = new Hono<Env>()
     .post("/register",
@@ -53,8 +54,14 @@ const route = new Hono<Env>()
         });
 
         return ctx.json({
-            token: jwtToken,
-            refresh: refreshToken,
+            accessToken: {
+                value: jwtToken,
+                expires: ms(authService.jwtTokenExpiry)
+            },
+            refreshToken: {
+                value: refreshToken,
+                expires: ms(authService.refreshTokenExpiry)
+            },
         });
     })
 
@@ -93,6 +100,7 @@ const route = new Hono<Env>()
         });
     }
     )
+
     .post("/reset-password/confirm",
         zValidator("json", z.object({
             token: z.string(),
@@ -116,4 +124,14 @@ const route = new Hono<Env>()
             }
 
         })
+
+    .post("token/refresh", zValidator("json", z.object({
+        refresh: z.string(),
+    })), async (ctx) => {
+        const { refresh } = ctx.req.valid('json');
+        const token = await authService.refreshToken(refresh);
+        return ctx.json({
+            accessToken: token,
+        });
+    })
 export default route;
