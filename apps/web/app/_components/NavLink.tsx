@@ -21,7 +21,6 @@ export const NavLink = forwardRef<HTMLAnchorElement, Props>(function NavLink(
     const $pathname = usePathname();
     const $isActive = useCallback(
         () => {
-            console.info(`NAVLINK: ${$pathname} ${href} ${$segments.join(' ')}`)
             if (isActive && segment) {
                 console.warn('NavLink: isActive and segment are mutually exclusive')
             }

@@ -11,4 +11,7 @@ export const clientApiReq = hc<BackendRoutes>(BACKEND_URL, {
             Authorization: `Bearer ${accessToken.accessToken}`,
         };
     },
+    fetch(input, requestInit, Env, executionCtx) {
+        return fetch(input, requestInit);
+    },
 })

@@ -4,8 +4,10 @@ import {
     SettingsIcon,
 } from "lucide-react"
 import { NavLink } from "@/app/_components/NavLink"
+import { OrgDataProvider } from "../_providers/OrgDataProvider"
+import { serverApiReq } from "@/client/server-req"
 
-export default function OrgLayout({
+export default async function OrgLayout({
     children,
     params
 }: {
@@ -14,39 +16,43 @@ export default function OrgLayout({
         org_id: string
     }
 }) {
+    const req = await serverApiReq.secured.org[":id"].$get({ param: { id: params.org_id } });
+    let res = await req.json();
     return (
-        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-            <div className="hidden border-r bg-muted/40 md:block">
-                <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-                        <Link href="/">
-                            <span className="font-bold text-lg">
-                                Nezoku
-                            </span>
-                        </Link>
-                    </div>
-                    <div className="flex-1">
-                        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-                            <NavLink href={`/o/${params.org_id}`}
-                                activeClassName="text-primary"
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                            >
-                                <HomeIcon className="h-4 w-4" />
-                                Projects
-                            </NavLink>
-                            <NavLink href={`/o/${params.org_id}/settings`}
-                                activeClassName="text-primary"
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                            >
-                                <SettingsIcon className="h-4 w-4" />
-                                Settings
-                            </NavLink>
+        <OrgDataProvider data={res}>
+            <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+                <div className="hidden border-r bg-muted/40 md:block">
+                    <div className="flex h-full max-h-screen flex-col gap-2">
+                        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+                            <Link href="/">
+                                <span className="font-bold text-lg">
+                                    Nezoku
+                                </span>
+                            </Link>
+                        </div>
+                        <div className="flex-1">
+                            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+                                <NavLink href={`/o/${params.org_id}`}
+                                    activeClassName="text-primary"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                                >
+                                    <HomeIcon className="h-4 w-4" />
+                                    Projects
+                                </NavLink>
+                                <NavLink href={`/o/${params.org_id}/settings`}
+                                    activeClassName="text-primary"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                                >
+                                    <SettingsIcon className="h-4 w-4" />
+                                    Settings
+                                </NavLink>
 
-                        </nav>
+                            </nav>
+                        </div>
                     </div>
                 </div>
+                {children}
             </div>
-            {children}
-        </div>
+        </OrgDataProvider>
     )
 }

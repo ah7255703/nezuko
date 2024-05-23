@@ -6,6 +6,7 @@ import { useSession } from "../auth/useSession";
 import useSWR from "swr";
 import type { InferResponseType } from "hono";
 import { SessionType } from "../auth/types";
+import { refreshToken } from "../actions/auth";
 
 type ClientSession = {
     user: InferResponseType<typeof clientApiReq.secured.whoami.$get> | null;
@@ -16,7 +17,14 @@ const [UserSafeProvider, useUser] = createSafeContext<ClientSession>();
 
 function UserProvider({ children }: { children: ReactNode }) {
     const { session } = useSession();
-    const user = useSWR(session?.accessToken, async () => (await clientApiReq.secured.whoami.$get()).json());
+    const user = useSWR(session?.accessToken, async () => {
+        const req = await clientApiReq.secured.whoami.$get();
+        if (req.status === 401) {
+            refreshToken()
+        } else {
+            return req.json()
+        }
+    })
     return <UserSafeProvider
         value={{
             session,

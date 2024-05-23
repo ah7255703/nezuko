@@ -1,12 +1,20 @@
+'use client'
 import { clientApiReq } from "@/client/client-req";
 import { createSafeContext } from "@/lib/createSafeContext";
 import { InferResponseType } from "hono";
 import React from "react";
 
-type Data = InferResponseType<typeof clientApiReq.secured.org[":id"]["$get"]>;
+type SS = InferResponseType<typeof clientApiReq.secured.org[":id"]['$get']>;
 
-const [OrgDataSafeProvider, useOrgData] = createSafeContext<{}>();
+const [OrgDataSafeProvider, useOrgData] = createSafeContext<{
+    data: NonNullable<SS>
+}>();
 
-export function OrgDataProvider({ children }: { children: React.ReactNode }) {
-    return <OrgDataSafeProvider value={{}}>{children}</OrgDataSafeProvider>;
+function OrgDataProvider({ children, data }: { children: React.ReactNode, data: NonNullable<SS> }) {
+    return <OrgDataSafeProvider value={{ data }}>{children}</OrgDataSafeProvider>;
+}
+
+export {
+    useOrgData,
+    OrgDataProvider
 }

@@ -15,7 +15,7 @@ type Dialog = {
     body?: ReactNode // replaces the whole content
     cancelText?: string
     confirmText?: string
-    onCconfirm?: (dialoger: DialogStore, dialog: Dialog) => void
+    onConfirm?: (dialoger: DialogStore, dialog: Dialog) => void
     onCancel?: (dialoger: DialogStore, dialog: Dialog) => void
 }
 
@@ -76,7 +76,7 @@ export function Dialoger(
         {
             dialogs.map((dialog, i) => {
                 return <AlertDialog key={i} open={dialog.open} onOpenChange={(open) => {
-                    if (dialog.onCconfirm || dialog.onCancel) {
+                    if (dialog.onConfirm || dialog.onCancel) {
                         return;
                     }
                     if (open) {
@@ -95,7 +95,7 @@ export function Dialoger(
                                 <div className="w-full">
                                     {dialog.content}
                                 </div>
-                                <AlertDialogFooter className="flex items-center gap-2">
+                                <AlertDialogFooter className="flex items-center gap-1">
                                     <AlertDialogCancel
                                         onClick={() => {
                                             if (dialog.onCancel) {
@@ -105,8 +105,8 @@ export function Dialoger(
                                     >{dialog.cancelText ?? "Cancel"}</AlertDialogCancel>
                                     <AlertDialogAction asChild
                                         onClick={() => {
-                                            if (dialog.onCconfirm) {
-                                                dialog.onCconfirm(dialoger, dialog)
+                                            if (dialog.onConfirm) {
+                                                dialog.onConfirm(dialoger, dialog)
                                             }
                                         }}
                                     >

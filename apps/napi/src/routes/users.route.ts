@@ -131,7 +131,8 @@ const route = new Hono<Env>()
         const { refresh } = ctx.req.valid('json');
         const token = await authService.refreshToken(refresh);
         return ctx.json({
-            accessToken: token,
+            token,
+            expires: ms(authService.jwtTokenExpiry)
         });
     })
 export default route;

@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { pgEnum, pgTable, primaryKey, serial, timestamp, unique, uuid, varchar } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, primaryKey, serial, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { createInsertSchema } from 'drizzle-zod'
 import { project } from './project';
@@ -31,6 +31,6 @@ export const orgRelations = relations(org, ({ one, many }) => ({
         fields: [org.createdBy],
         references: [user.id],
     }),
-    projects: many(project)
+    projects: many(project),
 }))
 export const orgInsertSchema = createInsertSchema(org)

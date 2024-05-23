@@ -17,10 +17,10 @@ export const loginUser = action.schema(schema)
         if (resp.ok) {
             const { accessToken, refreshToken } = await resp.json()
             cookies().set("accessToken", accessToken.value, {
-                maxAge: accessToken.expires
+                maxAge: accessToken.expires + Date.now()
             })
             cookies().set("refreshToken", refreshToken.value, {
-                maxAge: refreshToken.expires
+                maxAge: refreshToken.expires + Date.now()
             })
             return {
                 success: true,
@@ -49,7 +49,9 @@ export const refreshToken = action.action(async () => {
         const accessToken = await serverApiReq.credentials.token.refresh.$post({ json: { refresh: tokens.refreshToken } });
         if (accessToken.ok) {
             const data = await accessToken.json();
-            cookies().set("accessToken", data.accessToken)
+            cookies().set("accessToken", data.token, {
+                maxAge: data.expires + Date.now()
+            })
             return {
                 success: true,
                 data,
