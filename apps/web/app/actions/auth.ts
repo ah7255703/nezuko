@@ -17,10 +17,10 @@ export const loginUser = action.schema(schema)
         if (resp.ok) {
             const { accessToken, refreshToken } = await resp.json()
             cookies().set("accessToken", accessToken.value, {
-                maxAge: accessToken.expires + Date.now()
+                expires: accessToken.expires + Date.now()
             })
             cookies().set("refreshToken", refreshToken.value, {
-                maxAge: refreshToken.expires + Date.now()
+                expires: refreshToken.expires + Date.now()
             })
             return {
                 success: true,
@@ -50,7 +50,7 @@ export const refreshToken = action.action(async () => {
         if (accessToken.ok) {
             const data = await accessToken.json();
             cookies().set("accessToken", data.token, {
-                maxAge: data.expires + Date.now()
+                expires: data.expires + Date.now()
             })
             return {
                 success: true,

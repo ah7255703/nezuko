@@ -26,7 +26,7 @@ const formSchema = z.object({
 
 export default function DashboardIndex() {
   const router = useRouter();
-  const orgs = useSWR("orgs", async () => (await clientApiReq.secured.org.getAll.$get()).json())
+  const orgs = useSWR("orgs", async () => (await clientApiReq.secured.org.joined.$get()).json())
   return (
     <div className="flex flex-col size-full">
       <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -96,8 +96,8 @@ export default function DashboardIndex() {
                   orgs.data?.map((org, i) => {
                     return <div key={i} className="border rounded-lg">
                       <div className="w-full aspect-square h-40 bg-secondary" />
-                      <Link href={`/o/${org.id}`} className="p-3 inline-block">
-                        {org.name}
+                      <Link href={`/o/${org.org.id}`} className="p-3 inline-block">
+                        {org.org.name}
                       </Link>
                     </div>
                   })

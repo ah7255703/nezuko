@@ -14,7 +14,24 @@ const route = new Hono<Env>()
         })
         return ctx.json(orgs);
     })
-
+    .get('/joined', async (ctx) => {
+        const user = ctx.get("user")!
+        const orgs = await db.query.orgMembers.findMany({
+            where: eq(orgMembers.userId, user.userId),
+            columns: {
+                userId: false,
+            },
+            with: {
+                org: {
+                    columns: {
+                        name: true,
+                        id: true,
+                    }
+                }
+            }
+        })
+        return ctx.json(orgs)
+    })
     .get('/:id', async (ctx) => {
         const id = ctx.req.param("id");
         const _org = await db.query.org.findFirst({

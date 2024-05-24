@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Field, Form } from "@/components/ui/form"
 import { clientApiReq } from "@/client/client-req"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function RegisterPage() {
     const form = useForm({
@@ -23,7 +25,8 @@ export default function RegisterPage() {
             email: z.string().email("Invalid email address"),
             password: z.string().min(8, "Password must be at least 8 characters"),
         }))
-    })
+    });
+    const router = useRouter()
     return (
         <Card className="mx-auto max-w-sm w-full">
             <CardHeader>
@@ -42,8 +45,14 @@ export default function RegisterPage() {
                                 password: data.password,
                             }
                         })
-                        let resp = await req.json();
-                        console.log(resp)
+                        if (req.ok) {
+                            let resp = await req.json();
+                            toast.success("Account created");
+                            router.push("/auth")
+                        } else {
+                            toast.error("Failed to create account")
+                        }
+
                     })}>
                         <div className="grid gap-4">
                             <Field

@@ -1,5 +1,5 @@
 {
-  "id": "e59663cd-94d3-4e6d-8d29-a0edccaeda5d",
+  "id": "deb2d4d2-529e-409a-a5cb-c355fdc22703",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -161,7 +161,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -201,6 +202,12 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "org_id": {
+          "name": "org_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -211,6 +218,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_org_id_org_id_fk": {
+          "name": "project_org_id_org_id_fk",
+          "tableFrom": "project",
+          "tableTo": "org",
+          "columnsFrom": [
+            "org_id"
           ],
           "columnsTo": [
             "id"
@@ -404,41 +424,35 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.userOrganizations": {
-      "name": "userOrganizations",
+    "public.org_members": {
+      "name": "org_members",
       "schema": "",
       "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
         "org_id": {
           "name": "org_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "member_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "userOrganizations_user_id_users_id_fk": {
-          "name": "userOrganizations_user_id_users_id_fk",
-          "tableFrom": "userOrganizations",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "userOrganizations_org_id_org_id_fk": {
-          "name": "userOrganizations_org_id_org_id_fk",
-          "tableFrom": "userOrganizations",
+        "org_members_org_id_org_id_fk": {
+          "name": "org_members_org_id_org_id_fk",
+          "tableFrom": "org_members",
           "tableTo": "org",
           "columnsFrom": [
             "org_id"
@@ -446,16 +460,29 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "org_members_user_id_users_id_fk": {
+          "name": "org_members_user_id_users_id_fk",
+          "tableFrom": "org_members",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "userOrganizations_user_id_org_id_pk": {
-          "name": "userOrganizations_user_id_org_id_pk",
+        "org_members_org_id_user_id_pk": {
+          "name": "org_members_org_id_user_id_pk",
           "columns": [
-            "user_id",
-            "org_id"
+            "org_id",
+            "user_id"
           ]
         }
       },
@@ -495,6 +522,14 @@
       "values": [
         "inactive",
         "active"
+      ]
+    },
+    "public.member_role": {
+      "name": "member_role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "dev"
       ]
     }
   },
