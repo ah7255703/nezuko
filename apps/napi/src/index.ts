@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import usersRoutes from './routes/users.route.js'
 import privateUsersRoutes from './routes/users.private.route.js'
+import projectsRoutes from './routes/projects.route.js'
 import orgsRoutes from './routes/orgs.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
@@ -9,6 +10,9 @@ import { authService, InvalidTokenError } from './services/auth.service.js'
 import { HTTPException } from 'hono/http-exception';
 import logger from './services/logger.service.js'
 import { cors } from 'hono/cors'
+import { scrape } from './scraper/index.js'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 
 const app = new Hono<Env>({
   strict: true,
@@ -61,10 +65,21 @@ app.use("/secured/*", async (ctx, next) => {
 const secured = new Hono<Env>()
   .route("/org", orgsRoutes)
   .route("/", privateUsersRoutes)
+  .route('/projects', projectsRoutes)
 
 const routes = app
+  .post('/scrape', zValidator("json", z.object({
+    url: z.string(),
+    shape: z.any()
+  })), async (ctx) => {
+    const { url, shape } = ctx.req.valid('json');
+    console.log(url, shape)
+    const data = await scrape(url, shape)
+    return ctx.json(data)
+  })
   .route('/credentials', usersRoutes)
   .route("/secured", secured)
+
 
 export type BackendRoutes = typeof routes
 

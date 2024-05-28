@@ -39,11 +39,11 @@ function page() {
                             </CardHeader>
                             <CardContent>
                                 <form>
-                                    <Input placeholder="Store Name" />
+                                    <Input defaultValue={org.data.name} />
                                 </form>
                             </CardContent>
                             <CardFooter className="border-t px-6 py-4">
-                                <Button>Save</Button>
+                                <Button className='ms-auto'>Save</Button>
                             </CardFooter>
                         </Card>
                         <Card className='border-destructive'>
