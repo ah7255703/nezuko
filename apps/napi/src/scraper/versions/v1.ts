@@ -15,6 +15,7 @@ type Schema = Record<string, {
 interface Options {
     findAll: boolean;
 }
+
 async function processShape(shape: Schema, $: cheerio.CheerioAPI, opts?: Options): Promise<Record<string, any>> {
     const data: Record<string, any> = {};
 
@@ -27,8 +28,7 @@ async function processShape(shape: Schema, $: cheerio.CheerioAPI, opts?: Options
         }
 
         else if ('$getAll' in value && value.$getAll === true) {
-            // scope to the selector to prepend the shape to it
-            const { $inShape } = value;
+            const { $inShape, $parentSelector } = value;
             _.set(data, key, []);
             const elements = $(value.$parentSelector).html()
             if (elements) {
@@ -46,7 +46,7 @@ async function processShape(shape: Schema, $: cheerio.CheerioAPI, opts?: Options
             if (opts && opts.findAll) {
                 const values = elements.map((_, el) => {
                     return $(el).attr($attribute) || $(el).text();
-                }).get();
+                }).get()
                 _.set(data, key, values);
             } else {
                 const value = elements.first().attr($attribute) || elements.first().text();
@@ -57,6 +57,7 @@ async function processShape(shape: Schema, $: cheerio.CheerioAPI, opts?: Options
     }));
     return data;
 }
+
 
 export {
     processShape,

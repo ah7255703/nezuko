@@ -11,10 +11,11 @@ type Dialog = {
     open: boolean
     title: string
     descption?: string
-    content?: ReactNode
+    content?: ((dialoger: DialogStore, dialog: Dialog) => ReactNode) | ReactNode
     body?: ReactNode // replaces the whole content
     cancelText?: string
-    confirmText?: string
+    confirmText?: string;
+    withoutFooter?: boolean;
     onConfirm?: (dialoger: DialogStore, dialog: Dialog) => void
     onCancel?: (dialoger: DialogStore, dialog: Dialog) => void
 }
@@ -93,28 +94,31 @@ export function Dialoger(
                                     <AlertDialogDescription>{dialog.descption}</AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <div className="w-full">
-                                    {dialog.content}
+                                    {typeof dialog.content === "function" ? dialog.content(dialoger, dialog) : dialog.content}
                                 </div>
-                                <AlertDialogFooter className="flex items-center gap-1">
-                                    <AlertDialogCancel
-                                        onClick={() => {
-                                            if (dialog.onCancel) {
-                                                dialog.onCancel(dialoger, dialog)
-                                            }
-                                        }}
-                                    >{dialog.cancelText ?? "Cancel"}</AlertDialogCancel>
-                                    <AlertDialogAction asChild
-                                        onClick={() => {
-                                            if (dialog.onConfirm) {
-                                                dialog.onConfirm(dialoger, dialog)
-                                            }
-                                        }}
-                                    >
-                                        <Button>
-                                            {dialog.confirmText ?? "OK"}
-                                        </Button>
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
+                                {
+                                    dialog.withoutFooter ? null : <AlertDialogFooter className="flex items-center gap-1">
+                                        <AlertDialogCancel
+                                            onClick={() => {
+                                                if (dialog.onCancel) {
+                                                    dialog.onCancel(dialoger, dialog)
+                                                }
+                                            }}
+                                        >{dialog.cancelText ?? "Cancel"}</AlertDialogCancel>
+                                        <AlertDialogAction asChild
+                                            onClick={() => {
+                                                if (dialog.onConfirm) {
+                                                    dialog.onConfirm(dialoger, dialog)
+                                                }
+                                            }}
+                                        >
+                                            <Button>
+                                                {dialog.confirmText ?? "OK"}
+                                            </Button>
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                }
+
                             </>
                         }
                     </AlertDialogContent>
