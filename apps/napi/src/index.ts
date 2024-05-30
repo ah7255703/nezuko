@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import usersRoutes from './routes/users.route.js'
 import privateUsersRoutes from './routes/users.private.route.js'
 import projectsRoutes from './routes/projects.route.js'
+import sseRoutes from './routes/events.route.js'
 import orgsRoutes from './routes/orgs.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
@@ -79,6 +80,7 @@ const routes = app
   })
   .route('/credentials', usersRoutes)
   .route("/secured", secured)
+  .route("/events", sseRoutes)
 
 
 export type BackendRoutes = typeof routes

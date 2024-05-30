@@ -1,8 +1,10 @@
 'use client';
 import { Header } from "@/app/_components/HeaderShell";
 import { clientApiReq } from "@/client/client-req";
+import { Button } from "@/components/ui/button";
 import { createSafeContext } from "@/utils/create-safe-context";
 import { InferResponseType } from "hono";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import useSWR, { type SWRResponse } from "swr";
 
@@ -31,9 +33,14 @@ function ProjectProvider({ children }: { children: React.ReactNode }) {
         <SafeProjectProvider value={{ project }}>
             <div className='flex size-full flex-col'>
                 <Header
+                    end={<Button size='sm' asChild>
+                        <Link href={`/p/${project_id}/studio`}>
+                            Configure
+                        </Link>
+                    </Button>}
                     title={project.data.name}
                 />
-                <main className="size-full w-full">
+                <main className="flex-1 w-full">
                     {children}
                 </main>
             </div>
