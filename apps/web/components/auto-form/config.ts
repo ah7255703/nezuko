@@ -25,7 +25,7 @@ export const INPUT_COMPONENTS = {
 export const DEFAULT_ZOD_HANDLERS: {
   [key: string]: keyof typeof INPUT_COMPONENTS;
 } = {
-  ZodBoolean: "checkbox",
+  ZodBoolean: "switch",
   ZodEnum: "select",
   ZodNativeEnum: "select",
   ZodNumber: "number",

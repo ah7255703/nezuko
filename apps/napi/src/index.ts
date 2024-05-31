@@ -11,7 +11,7 @@ import { authService, InvalidTokenError } from './services/auth.service.js'
 import { HTTPException } from 'hono/http-exception';
 import logger from './services/logger.service.js'
 import { cors } from 'hono/cors'
-import { scrape } from './scraper/index.js'
+import { processWebpage } from './scraper/index.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 
@@ -74,8 +74,10 @@ const routes = app
     shape: z.any()
   })), async (ctx) => {
     const { url, shape } = ctx.req.valid('json');
-    console.log(url, shape)
-    const data = await scrape(url, shape)
+    const data = await processWebpage({
+      schema: shape,
+      url
+    })
     return ctx.json(data)
   })
   .route('/credentials', usersRoutes)

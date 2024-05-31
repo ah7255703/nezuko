@@ -83,25 +83,23 @@ function AutoForm<SchemaType extends ZodObjectOrWrapped>({
   }, [valuesString]);
 
   return (
-    <div className="w-full">
-      <Form {...form}>
-        <form
-          onSubmit={(e) => {
-            form.handleSubmit(onSubmit)(e);
-          }}
-          className={cn("space-y-5", className)}
-        >
-          <AutoFormObject
-            schema={objectFormSchema}
-            form={form}
-            dependencies={dependencies}
-            fieldConfig={fieldConfig}
-          />
+    <Form {...form}>
+      <form
+        onSubmit={(e) => {
+          form.handleSubmit(onSubmit)(e);
+        }}
+        className={cn("space-y-5 contents", className)}
+      >
+        <AutoFormObject
+          schema={objectFormSchema}
+          form={form}
+          dependencies={dependencies}
+          fieldConfig={fieldConfig}
+        />
 
-          {children}
-        </form>
-      </Form>
-    </div>
+        {children}
+      </form>
+    </Form>
   );
 }
 

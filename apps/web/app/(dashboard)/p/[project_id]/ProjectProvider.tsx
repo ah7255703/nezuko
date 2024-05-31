@@ -26,9 +26,11 @@ function ProjectProvider({ children }: { children: React.ReactNode }) {
         })
         return req.json()
     });
+
     if (!project.data) {
         return
     }
+    
     return (
         <SafeProjectProvider value={{ project }}>
             <div className='flex size-full flex-col'>

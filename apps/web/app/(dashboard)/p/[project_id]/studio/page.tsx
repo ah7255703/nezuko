@@ -14,12 +14,15 @@ import { linter } from '@codemirror/lint';
 import { ProjectSettingsPenel } from '../../_components/SettingsPanel'
 import { useSearchParams } from '@/app/_hooks/useSearchParams'
 import { cn } from '@/lib/utils'
+import { useStudio } from './StudioProvider'
+import { clientApiReq } from '@/client/client-req'
 
 
 export default function ProjectIndexPage() {
     const { project: { data: project } } = useProject()
     const { searchParams, setSearchParams } = useSearchParams();
     const isSettingsOpen = searchParams.get('settings') === 'true';
+    const { state, dispatch } = useStudio();
 
     if (!project) {
         return <div className='size-full flex-center'>
@@ -30,27 +33,59 @@ export default function ProjectIndexPage() {
     }
 
     return (
-        <div className='flex flex-row size-full p-4 gap-2 flex-1'>
+        <div className='flex flex-row size-full p-4 gap-2 flex-1 max-h-full overflow-auto'>
             <aside className={cn('h-full w-full max-w-sm', isSettingsOpen ? "static" : "absolute -translate-x-[120%]")}>
                 <ProjectSettingsPenel />
             </aside>
             <main className='w-full flex flex-col size-full flex-1 h-full'>
                 <div className='rounded-lg border w-full bg-muted/50 flex items-center gap-2 p-2.5'>
                     <div className='flex-1'>
-                        <input type="text" className='w-full bg-transparent outline-none' />
+                        <input value={state.request.url} onChange={(ev) => {
+                            dispatch({
+                                type: 'setRequest',
+                                payload: {
+                                    url: ev.target.value
+                                }
+                            })
+                        }} type="text" className='w-full bg-transparent outline-none' />
                     </div>
                     <div>
-                        <Button size='sm'>
+                        <Button size='sm' onClick={async () => {
+                            const req = await clientApiReq.secured.projects[':projectId'].try.$post({
+                                param: {
+                                    projectId: project.id
+                                },
+                                json: {
+                                    schemaString: state.schema.value,
+                                    request: state.request
+                                }
+                            })
+                            const res = await req.json();
+                            if (res.$_response) {
+                                dispatch({
+                                    type: 'setLastResponse',
+                                    payload: JSON.stringify(res.$_response, null, 2)
+                                })
+                            }
+                        }}>
                             Try
                         </Button>
                     </div>
                 </div>
-                <ResizablePanelGroup direction="horizontal" className='flex-1'>
+                <ResizablePanelGroup direction="horizontal" className='flex-1 overflow-hidden'>
                     <ResizablePanel minSize={40} data-container='schema-editor' className='py-2'>
                         <div className='rounded-lg border size-full overflow-auto'>
                             <CodeMirror
                                 className='first:size-full text-base'
-                                value='{}'
+                                value={state.schema.value}
+                                onChange={(value) => {
+                                    dispatch({
+                                        type: "setSchema",
+                                        payload: {
+                                            value: value,
+                                        }
+                                    })
+                                }}
                                 height='100%'
                                 extensions={[githubDark, basicSetup({
                                     lineNumbers: false,
@@ -73,9 +108,8 @@ export default function ProjectIndexPage() {
                     <ResizablePanel minSize={40} data-container='json-viewer' className='py-2'>
                         <div className='rounded-lg border size-full overflow-auto'>
                             <CodeMirror
-
                                 className='first:size-full text-base'
-                                value='{}'
+                                value={state.state.lastResponse || ''}
                                 readOnly
                                 height='100%'
                                 extensions={[basicDark, basicSetup({
@@ -96,7 +130,25 @@ export default function ProjectIndexPage() {
                         </Button>
                     </div>
                     <div>
-                        <Button size='sm'>
+                        <Button size='sm' onClick={async () => {
+                            dispatch({
+                                type: 'save::start'
+                            })
+                            const req = await clientApiReq.secured.projects[':projectId'].update.$put({
+                                param: {
+                                    projectId: project.id
+                                },
+                                json: {
+                                    request: {
+                                        method: state.request.method,
+                                        url: state.request.url,
+                                    },
+                                    schema: JSON.parse(state.schema.value) as any
+                                }
+                            })
+                            const resp = await req.json();
+                            console.log(resp)
+                        }}>
                             Save
                         </Button>
                     </div>

@@ -9,3 +9,9 @@ export class ScraperError extends Error {
         super(message);
     }
 }
+
+export class InvalidSchemaError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}
