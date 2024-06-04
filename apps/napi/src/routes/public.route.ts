@@ -5,6 +5,7 @@ import { project } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { cacheService } from "../services/redis.service";
 import { processWebpage } from "../scraper";
+import { pushStoreResponseTask } from "../tasks/storeResponse.task";
 
 async function getProjectById(projectId: string, noCache?: boolean) {
     const cacheKey = `project:${projectId}`;
@@ -32,20 +33,29 @@ async function processProject(p: typeof project.$inferSelect, noCache?: boolean)
         schema: p.schema,
         headers: p.request.headers,
     })
+
+    await pushStoreResponseTask({
+        projectId: p.id,
+        response: d,
+        env: "prod"
+    })
+
     await cacheService.setEx(cacheKey, 30, JSON.stringify(d));
     return d;
 }
 
 const route = new Hono<Env>()
     .post(':projectId', async (ctx) => {
-        const noCache = ctx.req.header("X-No-Cache") === "true";
-
+        const headers = ctx.req.header()
+        const noCache = headers['no-cache'] === 'true';
+        const token = headers['X-Token'];
         const { projectId } = ctx.req.param();
         const project = await getProjectById(projectId, noCache);
         if (!project) {
             throw new Error('Project not found');
         }
         const processed = await processProject(project, noCache);
+
         return ctx.json(processed);
     })
 export default route;

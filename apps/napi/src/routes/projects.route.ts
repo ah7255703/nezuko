@@ -63,7 +63,7 @@ const route = new Hono<Env>()
         )
         await pushStoreResponseTask({
             projectId,
-            response: JSON.stringify(response),
+            response: response,
             env: "test"
         })
         return ctx.json({

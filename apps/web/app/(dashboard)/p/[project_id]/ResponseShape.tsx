@@ -19,14 +19,14 @@ export function ResponseShape() {
                 projectId: project_id as string
             },
         })
-        if (req.ok) {
-            return req.json()
-        } else {
-            return []
+        let response = (await req.json()).at(0)
+        if (!response) return null
+        return {
+            responseShape: JSON.stringify(JSON.parse(response.responseShape ?? ""), null, 2),
+            responseTsInterface: response.responseTsInterface
         }
     });
 
-    const first = responsesJson.data?.at(0);
 
     return <div className='overflow-hidden'>
         <Tabs defaultValue="json-schema">
@@ -36,12 +36,12 @@ export function ResponseShape() {
                 </TabsTrigger>
                 <TabsTrigger value="ts-types">Typescript interface</TabsTrigger>
             </TabsList>
-            <div className="w-full max-h-40 overflow-auto">
+            <div className="w-full max-h-60 overflow-auto">
                 <TabsContent value="json-schema">
                     <CodeMirror
                         className='text-base rounded-lg overflow-hidden'
                         readOnly
-                        value={JSON.stringify(JSON.parse(first?.responseShape ?? ""), null, 2)}
+                        value={responsesJson.data?.responseShape ?? ""}
                         height='100%'
                         extensions={[basicDark, basicSetup({
                             lineNumbers: false,
@@ -56,7 +56,7 @@ export function ResponseShape() {
                     <CodeMirror
                         className='first:size-full text-base rounded-lg overflow-hidden'
                         readOnly
-                        value={first?.responseTsInterface ?? ""}
+                        value={responsesJson.data?.responseTsInterface ?? ""}
                         height='100%'
                         extensions={[basicDark, basicSetup({
                             lineNumbers: false,

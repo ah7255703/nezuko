@@ -274,9 +274,15 @@ importers:
       cookie:
         specifier: ^0.6.0
         version: 0.6.0
+      fetch-to-curl:
+        specifier: ^0.6.0
+        version: 0.6.0
       hono:
         specifier: ^4.2.9
         version: 4.3.7
+      http-to-curl:
+        specifier: ^1.4.3
+        version: 1.4.3
       immer:
         specifier: ^10.1.1
         version: 10.1.1
@@ -4384,6 +4390,9 @@ packages:
     resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
     engines: {node: ^12.20 || >= 14.13}
 
+  fetch-to-curl@0.6.0:
+    resolution: {integrity: sha512-Gsn0baHnENueQrtvKGikEkaAJhfQYDbSFnyZvI/qnwiZtdIwiuK6iJ0BAKzS3bEzpWyUr6SV9uB4H3HUwl/yZA==}
+
   file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -4643,6 +4652,9 @@ packages:
 
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
+
+  http-to-curl@1.4.3:
+    resolution: {integrity: sha512-em1Vx4z/Y6zAKhKS23DuYQOHajX/wnEq32Zgt71eHf9GZlJ3JpjMib8zs4MfprWEbfo/Ue0KjZhY9g21PA9qOA==}
 
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
@@ -5469,6 +5481,9 @@ packages:
 
   moment@2.30.1:
     resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+
+  monkeypatch@1.0.0:
+    resolution: {integrity: sha512-6tG0IrCUUIBuAspnbdmOAd+D/AptB/ya9JLujp88NIAuFuTGdGvCKtDkc6pwNOcIJ6nKLm3FjJlaCdx8vr3r2w==}
 
   mousetrap@1.6.5:
     resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
@@ -11658,6 +11673,8 @@ snapshots:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.3.3
 
+  fetch-to-curl@0.6.0: {}
+
   file-entry-cache@6.0.1:
     dependencies:
       flat-cache: 3.2.0
@@ -11951,6 +11968,11 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.1.0
       entities: 4.5.0
+
+  http-to-curl@1.4.3:
+    dependencies:
+      chalk: 2.4.2
+      monkeypatch: 1.0.0
 
   https-proxy-agent@5.0.1:
     dependencies:
@@ -13060,6 +13082,8 @@ snapshots:
   mkdirp@3.0.1: {}
 
   moment@2.30.1: {}
+
+  monkeypatch@1.0.0: {}
 
   mousetrap@1.6.5: {}
 

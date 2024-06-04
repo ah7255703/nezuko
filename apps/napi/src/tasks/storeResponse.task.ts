@@ -26,7 +26,7 @@ async function schemaToTs(schema: string, name: string) {
 }
 type JobData = {
     projectId: string;
-    response: string;
+    response: Record<string, any>;
     env: typeof projectResponseEnv.enumValues[number]
 }
 
@@ -40,12 +40,11 @@ storeResponseQueue.process(async (job: Job<JobData>, done: DoneCallback<DoneData
     try {
         loggerService.info.info("started [storeResponseQueue.process]")
         let { projectId, response, env } = job.data;
-        let resp = JSON.parse(response);
-        let jsonSchema = createSchema(resp)
+        let jsonSchema = createSchema(response)
         let ts = await schemaToTs(JSON.stringify(jsonSchema), "Response")
         let query = await db.insert(projectResponse).values({
             projectId,
-            response,
+            response: JSON.stringify(response),
             env,
             responseShape: JSON.stringify(jsonSchema),
             responseTsInterface: ts
