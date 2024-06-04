@@ -21,8 +21,9 @@ async function getProjectById(projectId: string, noCache?: boolean) {
 }
 
 async function processProject(p: typeof project.$inferSelect, noCache?: boolean) {
+    // noCache => don't get from cache
     const cacheKey = `processed:${p.id}`;
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey)
 
     if (cached && !noCache) {
         return JSON.parse(cached)
@@ -46,9 +47,8 @@ async function processProject(p: typeof project.$inferSelect, noCache?: boolean)
 
 const route = new Hono<Env>()
     .post(':projectId', async (ctx) => {
-        const headers = ctx.req.header()
-        const noCache = headers['no-cache'] === 'true';
-        const token = headers['X-Token'];
+        const noCache = ctx.req.header('X-No-Cache') === 'true';
+        const token = ctx.req.header('X-Token');
         const { projectId } = ctx.req.param();
         const project = await getProjectById(projectId, noCache);
         if (!project) {

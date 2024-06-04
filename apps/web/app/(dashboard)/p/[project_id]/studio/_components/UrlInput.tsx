@@ -10,16 +10,16 @@ export const UrlInput = ({ value, onChange }: {
 }) => {
     const inputRef = useRef<HTMLDivElement>(null);
     const [isValid, setValid] = useState(true)
-
     function handleChange(value: string) {
         const v = z.string().url().safeParse(value);
         setValid(v.success);
     }
-
+    const [hasFocus, setHasFocus] = useState(false);
     useEditable(inputRef, (text, pos) => {
         handleChange(text);
         onChange(text);
-        console.log(text, pos);
+    }, {
+        disabled: !hasFocus
     });
 
     const urlParts = useMemo(() => {
@@ -42,7 +42,10 @@ export const UrlInput = ({ value, onChange }: {
 
 
     return (
-        <div ref={inputRef} className={cn('w-full h-fit outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")}>
+        <div ref={inputRef}
+            onClick={() => setHasFocus(true)}
+            onBlur={() => setHasFocus(false)}
+            className={cn('w-full flex-1 outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")} >
             {
                 urlParts ? (
                     <div>
@@ -51,11 +54,10 @@ export const UrlInput = ({ value, onChange }: {
                         <span className='text-rose-500'>{urlParts.pathname}</span>
                         <span className='text-blue-500'>{urlParts.search}</span>
                         <span className='text-purple-500'>{urlParts.hash}</span>
-                    </div>
-                ) : <div className={cn(isValid ? "" : "text-destructive")}>
-                    {value}
-                </div>
+                    </div >
+                ) :
+                    value
             }
-        </div>
+        </div >
     );
 };

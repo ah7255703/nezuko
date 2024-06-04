@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, varchar, timestamp, uuid, jsonb, text } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, varchar, timestamp, uuid, jsonb, text, bigint } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { user } from './user';
@@ -23,6 +23,9 @@ export const project = pgTable("project", {
         body: Record<string, any>;
         headers: Record<string, string>;
     }>().notNull(),
+    apiCallsCount: bigint("api_calls_count", {
+        mode: 'number'
+    }).notNull().default(0),
     schemaVersion: varchar("schema_version", { length: 10 }).notNull().default("1.0"),
     schema: jsonb("schema").default(sql`'{}'::jsonb`).$type<Record<string, any>>().notNull(),
 })

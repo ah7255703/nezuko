@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { Env } from "../types";
 import { db } from "@db/index";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, getTableName, sql, sum, } from "drizzle-orm";
 import { project, projectResponse, updateProjectSchema } from "@db/schema";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -84,12 +84,43 @@ const route = new Hono<Env>()
         });
         return ctx.json(data);
     })
-    .get(':projectId/api_stats', async (ctx) => {
+    .get(':projectId/stats', async (ctx) => {
         const { projectId } = ctx.req.param();
-        const data = await db.select({
+        const data = await db.query.project.findFirst({
+            where: eq(project.id, projectId),
+        });
+        const projectDbUsage = await db.select({
+            dbUsage: sum(sql`pg_column_size(project)`)
+        }).from(project)
+            .where(eq(project.id, projectId))
+        console.log(projectDbUsage.at(0)?.dbUsage)
+        const storedResponsesDbUsage = await db.select({
+            dbUsage: sum(sql`pg_column_size(project_response)`)
+        }).from(projectResponse)
+            .where(eq(projectResponse.projectId, projectId))
+
+        const storedResponsesCount = await db.select({
             count: count()
         }).from(projectResponse).where(eq(projectResponse.projectId, projectId))
-        return ctx.json(data.at(0));
+
+        return ctx.json({
+            apiCallsCount: data?.apiCallsCount ?? 0,
+            storedResponsesCount: storedResponsesCount.at(0)?.count ?? 0,
+            dbUsage: projectDbUsage.at(0)?.dbUsage ?? 0,
+            storedResponsesDbUsage: storedResponsesDbUsage.at(0)?.dbUsage ?? 0,
+        });
     })
+    .delete(":projectId/erase_prev_responses", async (ctx) => {
+        const { projectId } = ctx.req.param();
+
+        const lastRow = db.$with('last_row').as(
+            db.select({ id: sql`max(${projectResponse.createdAt})`.as('created_at') }).from(projectResponse)
+        );
+        await db.with(lastRow)
+            .delete(projectResponse)
+            .where(and(sql`${projectResponse.createdAt} != (select created_at from ${lastRow})`, eq(projectResponse.projectId, projectId)));
+        return ctx.json({});
+    })
+
 
 export default route

@@ -7,8 +7,8 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { ResponseShape } from './ResponseShape'
-import { serverApiReq } from '@/client/server-req'
 import { CurlGen } from './CurlGen'
+import { ProjectStats } from './ProjectStats'
 
 export default async function ProjectIndexPage({
     params: { project_id }
@@ -18,31 +18,16 @@ export default async function ProjectIndexPage({
     }
 }) {
 
-    const statsReq = await serverApiReq.secured.projects[':projectId'].api_stats.$get({
-        param: {
-            projectId: project_id,
-        }
-
-    })
-    const stats = await statsReq.json();
-
     return (
         <main className="grid flex-1 items-start p-4 grid-cols-1 sm:grid-cols-2 gap-2">
 
-            <div className='grid grid-cols-2 gap-5 col-span-2'>
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardDescription>
-                            Total API Calls
-                        </CardDescription>
-                        <CardTitle className="text-4xl">
-                            {stats.count}
-                        </CardTitle>
-                    </CardHeader>
-                </Card>
+            <div className='grid grid-cols-3 gap-5 col-span-2'>
+                <ProjectStats
+                    projectId={project_id}
+                />
             </div>
 
-            <Card>
+            <Card className='col-span-2'>
                 <CardHeader>
                     <CardTitle>
                         Response Shape

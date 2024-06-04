@@ -2,7 +2,7 @@ import BeeQueue, { DoneCallback, Job } from "bee-queue";
 import { options } from "./options";
 import loggerService from "../services/logger.service";
 import { db } from "@db/index";
-import { projectResponse, projectResponseEnv } from "@db/schema";
+import { project, projectResponse, projectResponseEnv } from "@db/schema";
 import { createSchema } from 'genson-js';
 import {
     quicktype,
@@ -10,12 +10,13 @@ import {
     JSONSchemaInput,
     FetchingJSONSchemaStore
 } from "quicktype-core";
+import { eq, sql } from "drizzle-orm";
 async function schemaToTs(schema: string, name: string) {
     const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
     await schemaInput.addSource({ name, schema });
     const inputData = new InputData();
     inputData.addInput(schemaInput);
-    let qt =  await quicktype({
+    let qt = await quicktype({
         inputData,
         lang: "ts",
         rendererOptions: {
@@ -38,7 +39,6 @@ const storeResponseQueue = new BeeQueue<JobData>('process-video', options);
 
 storeResponseQueue.process(async (job: Job<JobData>, done: DoneCallback<DoneData>) => {
     try {
-        loggerService.info.info("started [storeResponseQueue.process]")
         let { projectId, response, env } = job.data;
         let jsonSchema = createSchema(response)
         let ts = await schemaToTs(JSON.stringify(jsonSchema), "Response")
@@ -49,10 +49,15 @@ storeResponseQueue.process(async (job: Job<JobData>, done: DoneCallback<DoneData
             responseShape: JSON.stringify(jsonSchema),
             responseTsInterface: ts
         }).returning();
+
         let result = query.at(0);
+
         if (!result) {
             throw new Error("failed to store response");
         }
+
+        await db.execute(sql`UPDATE project SET api_calls_count = api_calls_count + 1 WHERE id = ${projectId}`);
+
         done(null, {
             success: true
         });

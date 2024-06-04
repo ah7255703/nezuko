@@ -40,17 +40,15 @@ export default function ProjectIndexPage() {
             </aside>
             <main className='w-full flex flex-col size-full flex-1 h-full'>
                 <div className='rounded-lg border w-full bg-muted/50 flex flex-row items-center gap-2 p-2.5'>
-                    <div className='flex-1 h-fit'>
-                        <UrlInput value={state.request.url} onChange={(value) => {
-                            dispatch({
-                                type: 'setRequest',
-                                payload: {
-                                    url: value
-                                }
-                            })
-                        }}
-                        />
-                    </div>
+                    <UrlInput value={state.request.url} onChange={(value) => {
+                        dispatch({
+                            type: 'setRequest',
+                            payload: {
+                                url: value
+                            }
+                        })
+                    }}
+                    />
                     <div>
                         <Button size='sm' onClick={async () => {
                             const req = await clientApiReq.secured.projects[':projectId'].try.$post({
@@ -109,7 +107,7 @@ export default function ProjectIndexPage() {
                     <ResizableHandle withHandle className='mx-2' />
                     <ResizablePanel minSize={40} data-container='json-viewer' className='py-2'>
                         <div className='rounded-lg border size-full overflow-auto'>
-                            <CodeMirror
+                            {state.state.lastResponse ? <CodeMirror
                                 className='first:size-full text-base'
                                 value={state.state.lastResponse || ''}
                                 readOnly
@@ -119,7 +117,9 @@ export default function ProjectIndexPage() {
                                     autocompletion: true,
                                 }), json()]}
                                 theme="dark"
-                            />
+                            /> : <EmptyState>
+                                <h2>No response yet</h2>
+                            </EmptyState>}
                         </div>
                     </ResizablePanel>
                 </ResizablePanelGroup>

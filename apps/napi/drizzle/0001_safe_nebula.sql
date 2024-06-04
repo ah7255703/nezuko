@@ -1,0 +1,1 @@
+ALTER TABLE "project" ADD COLUMN "api_calls_count" bigint DEFAULT 0 NOT NULL;
