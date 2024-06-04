@@ -1,5 +1,5 @@
 {
-  "id": "deb2d4d2-529e-409a-a5cb-c355fdc22703",
+  "id": "43531f13-6fda-4466-b213-e96dffe7c2a7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -208,6 +208,27 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "request": {
+          "name": "request",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "schema_version": {
+          "name": "schema_version",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'1.0'"
+        },
+        "schema": {
+          "name": "schema",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {},
@@ -231,6 +252,75 @@
           "tableTo": "org",
           "columnsFrom": [
             "org_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.project_response": {
+      "name": "project_response",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "response": {
+          "name": "response",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "response_shape": {
+          "name": "response_shape",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_ts_interface": {
+          "name": "response_ts_interface",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "env": {
+          "name": "env",
+          "type": "project_response_env",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "project_response_project_id_project_id_fk": {
+          "name": "project_response_project_id_project_id_fk",
+          "tableFrom": "project_response",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -514,6 +604,14 @@
       "values": [
         "admin",
         "user"
+      ]
+    },
+    "public.project_response_env": {
+      "name": "project_response_env",
+      "schema": "public",
+      "values": [
+        "test",
+        "prod"
       ]
     },
     "public.project_status": {

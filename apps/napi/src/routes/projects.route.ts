@@ -1,11 +1,12 @@
 import { Hono } from "hono";
 import { Env } from "../types";
 import { db } from "@db/index";
-import { eq } from "drizzle-orm";
-import { createProjectSchema, project, updateProjectSchema } from "@db/schema";
+import { and, count, eq } from "drizzle-orm";
+import { project, projectResponse, updateProjectSchema } from "@db/schema";
 import { zValidator } from "@hono/zod-validator";
-import { Schema, z } from "zod";
+import { z } from "zod";
 import { processWebpage } from "../scraper";
+import { pushStoreResponseTask } from "../tasks/storeResponse.task";
 
 const route = new Hono<Env>()
     .get(':orgId/getAll', async (ctx) => {
@@ -60,10 +61,34 @@ const route = new Hono<Env>()
             url: request.url,
         }
         )
+        await pushStoreResponseTask({
+            projectId,
+            response: JSON.stringify(response),
+            env: "test"
+        })
         return ctx.json({
             $_response: response,
         });
     })
-
+    .get(':projectId/responses', async (ctx) => {
+        const { projectId } = ctx.req.param();
+        const data = await db.query.projectResponse.findMany({
+            where: and(
+                eq(projectResponse.projectId, projectId),
+            ),
+            orderBy(fields, operators) {
+                return operators.desc(fields.createdAt)
+            },
+            offset: 1
+        });
+        return ctx.json(data);
+    })
+    .get(':projectId/api_stats', async (ctx) => {
+        const { projectId } = ctx.req.param();
+        const data = await db.select({
+            count: count()
+        }).from(projectResponse).where(eq(projectResponse.projectId, projectId))
+        return ctx.json(data.at(0));
+    })
 
 export default route

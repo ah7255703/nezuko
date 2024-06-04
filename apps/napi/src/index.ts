@@ -14,6 +14,7 @@ import { cors } from 'hono/cors'
 import { processWebpage } from './scraper/index.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { pushStoreResponseTask } from './tasks/storeResponse.task.js'
 
 const app = new Hono<Env>({
   strict: true,
@@ -83,7 +84,9 @@ const routes = app
   .route('/credentials', usersRoutes)
   .route("/secured", secured)
   .route("/events", sseRoutes)
-
+  .get("/health", async (ctx) => {
+    return ctx.json({ status: "ok" })
+  })
 
 export type BackendRoutes = typeof routes
 

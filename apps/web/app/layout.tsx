@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-svh h-svh max-h-svh w-svw max-w-full bg-background font-sans text-foreground antialiased",
+          "min-h-svh h-svh max-h-svh w-svw max-w-full bg-background font-sans text-foreground overflow-hidden antialiased",
           arabicFont.variable,
           latinFont.className,
         )}

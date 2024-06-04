@@ -23,15 +23,19 @@ async function page({
       />
       <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
         <div
-          className="flex-1 rounded-lg border border-dashed shadow-sm">
+          className="flex-1 rounded-lg shadow-sm">
           {
             projects.length === 0 ? <div className='flex-center size-full'>
               <CreateProject />
-            </div> : projects.map((p) => (
-              <Link href={`/p/${p.id}`}>
-                {p.name}
-              </Link>
-            ))
+            </div> : <div className='grid grid-cols-3'>
+              {
+                projects.map((p) => (
+                  <Link href={`/p/${p.id}`} className='p-2 border rounded-md'>
+                    {p.name}
+                  </Link>
+                ))
+              }
+            </div>
           }
         </div>
       </main>

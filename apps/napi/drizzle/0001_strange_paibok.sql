@@ -1,1 +1,0 @@
-ALTER TABLE "project" ADD COLUMN "request" jsonb DEFAULT '{}'::jsonb NOT NULL;

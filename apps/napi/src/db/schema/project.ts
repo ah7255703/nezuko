@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, varchar, timestamp, uuid, jsonb } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, varchar, timestamp, uuid, jsonb, text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { createInsertSchema } from 'drizzle-zod';
 import { user } from './user';
 import { org } from './org';
 import { z } from 'zod';
@@ -26,7 +26,24 @@ export const project = pgTable("project", {
     schemaVersion: varchar("schema_version", { length: 10 }).notNull().default("1.0"),
     schema: jsonb("schema").default(sql`'{}'::jsonb`).$type<Record<string, any>>().notNull(),
 })
+export const projectResponseEnv = pgEnum("project_response_env", ["test", "prod"])
 
+export const projectResponse = pgTable("project_response", {
+    id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+    projectId: uuid('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+    response: text("response").notNull(),
+    responseShape: text("response_shape"),
+    responseTsInterface: text("response_ts_interface"),
+    createdAt: timestamp("created_at").notNull().default(sql`now()`),
+    env: projectResponseEnv("env").notNull(),
+})
+
+export const projectResponseRelations = relations(projectResponse, ({ one }) => ({
+    project: one(project, {
+        fields: [projectResponse.projectId],
+        references: [project.id],
+    }),
+}));
 
 export const createProjectSchema = createInsertSchema(project);
 export const updateProjectSchema = z.object({
@@ -41,6 +58,7 @@ export const updateProjectSchema = z.object({
     }).optional(),
     schema: z.record(z.any()).optional(),
 })
+
 export const projectRelations = relations(project, ({ one, many }) => ({
     user: one(user, {
         fields: [project.createdBy],
@@ -50,4 +68,5 @@ export const projectRelations = relations(project, ({ one, many }) => ({
         fields: [project.org],
         references: [org.id],
     }),
+    responses: many(projectResponse),
 }));

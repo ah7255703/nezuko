@@ -3,16 +3,30 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { ResponseShape } from './ResponseShape'
+import { serverApiReq } from '@/client/server-req'
 
-export default function ProjectIndexPage() {
+export default async function ProjectIndexPage({
+    params: { project_id }
+}: {
+    params: {
+        project_id: string
+    }
+}) {
+    
+    const statsReq = await serverApiReq.secured.projects[':projectId'].api_stats.$get({
+        param: {
+            projectId: project_id,
+        }
+
+    })
+    const stats = await statsReq.json()
     return (
-        <main className="grid flex-1 items-start p-4">
-            <Card>
+        <main className="grid flex-1 items-start p-4 grid-cols-2 gap-2">
+            <Card className='col-span-2'>
                 <CardHeader>
                     <CardTitle>API Calls</CardTitle>
                     <CardDescription>
@@ -26,26 +40,24 @@ export default function ProjectIndexPage() {
                                 Total API Calls
                             </CardDescription>
                             <CardTitle className="text-4xl">
-                                10,000
+                                {stats.count}
                             </CardTitle>
                         </CardHeader>
-                        <CardFooter>
-                            <Progress value={25} aria-label="25% increase" />
-                        </CardFooter>
                     </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardDescription>
-                                Total API Calls
-                            </CardDescription>
-                            <CardTitle className="text-4xl">
-                                10,000
-                            </CardTitle>
-                        </CardHeader>
-                        <CardFooter>
-                            <Progress value={25} aria-label="25% increase" />
-                        </CardFooter>
-                    </Card>
+                </CardContent>
+            </Card>
+
+            <Card className='col-span-2'>
+                <CardHeader>
+                    <CardTitle>
+                        Response Shape
+                    </CardTitle>
+                    <CardDescription>
+                        The expected response shape based on the previous responses.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ResponseShape />
                 </CardContent>
             </Card>
         </main>

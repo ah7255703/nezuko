@@ -16,6 +16,7 @@ import { useSearchParams } from '@/app/_hooks/useSearchParams'
 import { cn } from '@/lib/utils'
 import { useStudio } from './StudioProvider'
 import { clientApiReq } from '@/client/client-req'
+import { UrlInput } from './_components/UrlInput'
 
 
 export default function ProjectIndexPage() {
@@ -40,14 +41,15 @@ export default function ProjectIndexPage() {
             <main className='w-full flex flex-col size-full flex-1 h-full'>
                 <div className='rounded-lg border w-full bg-muted/50 flex items-center gap-2 p-2.5'>
                     <div className='flex-1'>
-                        <input value={state.request.url} onChange={(ev) => {
+                        <UrlInput value={state.request.url} onChange={(value) => {
                             dispatch({
                                 type: 'setRequest',
                                 payload: {
-                                    url: ev.target.value
+                                    url: value
                                 }
                             })
-                        }} type="text" className='w-full bg-transparent outline-none' />
+                        }}
+                        />
                     </div>
                     <div>
                         <Button size='sm' onClick={async () => {

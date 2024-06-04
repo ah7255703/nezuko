@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1716574573121,
-      "tag": "0000_last_wolfsbane",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1717159687019,
-      "tag": "0001_strange_paibok",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1717161572521,
-      "tag": "0002_aromatic_catseye",
+      "when": 1717471764648,
+      "tag": "0000_cute_warpath",
       "breakpoints": true
     }
   ]

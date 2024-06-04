@@ -42,7 +42,7 @@ function ProjectProvider({ children }: { children: React.ReactNode }) {
                     </Button>}
                     title={project.data.name}
                 />
-                <main className="flex-1 w-full">
+                <main className="flex-1 w-full overflow-auto">
                     {children}
                 </main>
             </div>

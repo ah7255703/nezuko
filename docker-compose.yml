@@ -1,6 +1,13 @@
 version: "3"
 
 services:
+  redis: 
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - app_network
   pg:
     image: postgres
     restart: always
