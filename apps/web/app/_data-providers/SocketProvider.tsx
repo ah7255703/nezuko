@@ -1,10 +1,10 @@
 'use client'
-import { Socket, io } from "socket.io-client";
-import { ReactNode, useCallback, useEffect,  useReducer } from "react";
+import { Socket } from "socket.io-client";
+import { ReactNode, useCallback, useEffect, useReducer } from "react";
 import { produce } from "immer";
 import { createSafeContext } from "@/utils/create-safe-context";
-import { useSession } from 'next-auth/react';
-import { env } from "@/env.mjs";
+import { useUser } from "./UserProvider";
+import { socket } from "./socket";
 
 type SocketState = {
     state: "stale" | "connected" | "retrying" | "disconnected" | "error";
@@ -50,12 +50,8 @@ function socketReducer(state: SocketState, action: ActionType) {
 
 const [SocketSafeProvider, useSocket] = createSafeContext<SocketContextData>("");
 
-const socket = io(env.NEXT_PUBLIC_DIRECT_BACKEND_URL, {
-    transports: ["websocket"],
-});
-
 function SocketProvider({ children }: { children: ReactNode }) {
-    const { data } = useSession()
+    const user = useUser()
     const [state, dispatch] = useReducer(socketReducer, {
         state: "stale",
         reason: null,
@@ -63,14 +59,14 @@ function SocketProvider({ children }: { children: ReactNode }) {
     });
 
     const handleConnect = useCallback(() => {
-        socket.emit("alive-connection", { userId: data?.user.id })
+        socket.emit("alive-connection", { userId: user?.user?.userId })
         dispatch({ type: "CONNECTED" });
-    }, [data, socket]);
+    }, [user, socket]);
 
     const handleDisconnect = useCallback((reason: string) => {
-        socket.emit("dead-connection", { userId: data?.user.id })
+        socket.emit("dead-connection", { userId: user?.user?.userId })
         dispatch({ type: "DISCONNECTED", payload: reason });
-    }, [data, socket]);
+    }, [user, socket]);
 
     const handleReconnectAttempt = useCallback((attempt: number) => {
         dispatch({ type: "RECONNECT_ATTEMPT", payload: attempt });
