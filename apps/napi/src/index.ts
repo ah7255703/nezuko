@@ -5,6 +5,7 @@ import privateUsersRoutes from './routes/users.private.route.js'
 import projectsRoutes from './routes/projects.route.js'
 import sseRoutes from './routes/events.route.js'
 import orgsRoutes from './routes/orgs.route.js'
+import publicRoutes from './routes/public.route.js'
 import { socket } from './socket.js'
 import { Env } from './types.js'
 import { authService, InvalidTokenError } from './services/auth.service.js'
@@ -14,7 +15,7 @@ import { cors } from 'hono/cors'
 import { processWebpage } from './scraper/index.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { pushStoreResponseTask } from './tasks/storeResponse.task.js'
+import { cacheService } from './services/redis.service.js'
 
 const app = new Hono<Env>({
   strict: true,
@@ -84,17 +85,22 @@ const routes = app
   .route('/credentials', usersRoutes)
   .route("/secured", secured)
   .route("/events", sseRoutes)
+  .route("/project", publicRoutes)
   .get("/health", async (ctx) => {
     return ctx.json({ status: "ok" })
   })
 
 export type BackendRoutes = typeof routes
-
+async function preStart() {
+  await cacheService.connect()
+}
 const port = 3001
-
 const server = serve({
   fetch: app.fetch,
   port
+}, (info) => {
+  preStart()
+  console.log(info)
 })
 
 socket.listen(server)
