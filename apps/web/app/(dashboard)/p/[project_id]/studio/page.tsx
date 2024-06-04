@@ -39,8 +39,8 @@ export default function ProjectIndexPage() {
                 <ProjectSettingsPenel />
             </aside>
             <main className='w-full flex flex-col size-full flex-1 h-full'>
-                <div className='rounded-lg border w-full bg-muted/50 flex items-center gap-2 p-2.5'>
-                    <div className='flex-1'>
+                <div className='rounded-lg border w-full bg-muted/50 flex flex-row items-center gap-2 p-2.5'>
+                    <div className='flex-1 h-fit'>
                         <UrlInput value={state.request.url} onChange={(value) => {
                             dispatch({
                                 type: 'setRequest',

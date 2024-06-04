@@ -16,7 +16,6 @@ const [SafeProjectProvider, useProject] = createSafeContext<{
 
 function ProjectProvider({ children }: { children: React.ReactNode }) {
     const { project_id } = useParams()
-
     const project = useSWR(project_id, async () => {
         if (!project_id) return null;
         const req = await clientApiReq.secured.projects[':projectId'].$get({
@@ -30,7 +29,7 @@ function ProjectProvider({ children }: { children: React.ReactNode }) {
     if (!project.data) {
         return
     }
-    
+
     return (
         <SafeProjectProvider value={{ project }}>
             <div className='flex size-full flex-col'>

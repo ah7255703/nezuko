@@ -28,7 +28,7 @@ export function ResponseShape() {
 
     const first = responsesJson.data?.at(0);
 
-    return <div className='overflow-auto'>
+    return <div className='overflow-hidden'>
         <Tabs defaultValue="json-schema">
             <TabsList className="space-x-2">
                 <TabsTrigger value="json-schema">
@@ -36,38 +36,40 @@ export function ResponseShape() {
                 </TabsTrigger>
                 <TabsTrigger value="ts-types">Typescript interface</TabsTrigger>
             </TabsList>
-            <TabsContent value="json-schema">
-                <CodeMirror
-                    className='text-base rounded-lg overflow-hidden'
-                    readOnly
-                    value={JSON.stringify(first?.responseShape, null, 2)}
-                    height='100%'
-                    extensions={[basicDark, basicSetup({
-                        lineNumbers: false,
-                        autocompletion: true,
-                        closeBrackets: true,
-                        foldGutter: false,
-                    }), json()]}
-                    theme="dark"
-                />
-            </TabsContent>
-            <TabsContent value="ts-types">
-                <CodeMirror
-                    className='first:size-full text-base rounded-lg overflow-hidden'
-                    readOnly
-                    value={first?.responseTsInterface ?? ""}
-                    height='100%'
-                    extensions={[basicDark, basicSetup({
-                        lineNumbers: false,
-                        autocompletion: true,
-                        closeBrackets: true,
-                        foldGutter: false,
-                    }), javascript({
-                        typescript: true
-                    })]}
-                    theme="dark"
-                />
-            </TabsContent>
+            <div className="w-full max-h-40 overflow-auto">
+                <TabsContent value="json-schema">
+                    <CodeMirror
+                        className='text-base rounded-lg overflow-hidden'
+                        readOnly
+                        value={JSON.stringify(JSON.parse(first?.responseShape ?? ""), null, 2)}
+                        height='100%'
+                        extensions={[basicDark, basicSetup({
+                            lineNumbers: false,
+                            autocompletion: true,
+                            closeBrackets: true,
+                            foldGutter: false,
+                        }), json()]}
+                        theme="dark"
+                    />
+                </TabsContent>
+                <TabsContent value="ts-types">
+                    <CodeMirror
+                        className='first:size-full text-base rounded-lg overflow-hidden'
+                        readOnly
+                        value={first?.responseTsInterface ?? ""}
+                        height='100%'
+                        extensions={[basicDark, basicSetup({
+                            lineNumbers: false,
+                            autocompletion: true,
+                            closeBrackets: true,
+                            foldGutter: false,
+                        }), javascript({
+                            typescript: true
+                        })]}
+                        theme="dark"
+                    />
+                </TabsContent>
+            </div>
         </Tabs>
 
     </div>

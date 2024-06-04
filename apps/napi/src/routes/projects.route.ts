@@ -72,14 +72,15 @@ const route = new Hono<Env>()
     })
     .get(':projectId/responses', async (ctx) => {
         const { projectId } = ctx.req.param();
+        // get last row
         const data = await db.query.projectResponse.findMany({
             where: and(
                 eq(projectResponse.projectId, projectId),
             ),
             orderBy(fields, operators) {
-                return operators.desc(fields.createdAt)
+                return operators.desc(projectResponse.createdAt)
             },
-            offset: 1
+            limit: 1
         });
         return ctx.json(data);
     })

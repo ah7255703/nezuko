@@ -40,13 +40,14 @@ storeResponseQueue.process(async (job: Job<JobData>, done: DoneCallback<DoneData
     try {
         loggerService.info.info("started [storeResponseQueue.process]")
         let { projectId, response, env } = job.data;
-        let jsonSchema = JSON.stringify(createSchema(response));
-        let ts = await schemaToTs(jsonSchema, "Response")
+        let resp = JSON.parse(response);
+        let jsonSchema = createSchema(resp)
+        let ts = await schemaToTs(JSON.stringify(jsonSchema), "Response")
         let query = await db.insert(projectResponse).values({
             projectId,
             response,
             env,
-            responseShape: jsonSchema,
+            responseShape: JSON.stringify(jsonSchema),
             responseTsInterface: ts
         }).returning();
         let result = query.at(0);

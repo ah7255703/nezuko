@@ -42,7 +42,7 @@ export const UrlInput = ({ value, onChange }: {
 
 
     return (
-        <div ref={inputRef} className={cn('w-full outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")}>
+        <div ref={inputRef} className={cn('w-full h-fit outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")}>
             {
                 urlParts ? (
                     <div>
