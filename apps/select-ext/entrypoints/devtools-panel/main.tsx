@@ -6,11 +6,11 @@ import { sendMessage } from "webext-bridge/devtools";
 function App() {
     return <div>
         <button className="p-2" onClick={async () => {
-            await sendMessage("ping", {});
-            await sendMessage("ping", {}, {
+            const selector = await sendMessage("get-selector", { element: document.body }, {
                 context: "content-script",
                 tabId: browser.devtools.inspectedWindow.tabId,
             });
+            console.log(selector);
         }}>
             send message
         </button>
