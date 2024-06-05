@@ -1,6 +1,11 @@
+import { sendMessage, onMessage } from "webext-bridge/content-script";
+
 export default defineContentScript({
-  matches: ['*://*.google.com/*'],
-  main() {
-    console.log('Hello content.');
+  matches: ['*'],
+  main(ctx) {
+    console.log("content loaded");
+    onMessage("get-preferences", ({ data }) => {
+      console.log("get-preferences");
+    });
   },
 });

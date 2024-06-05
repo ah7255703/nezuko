@@ -11,6 +11,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { BackButton } from "./BackButton";
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Notifications } from "./Notifications";
 
 export const HeaderShell = forwardRef<ElementRef<"header">, ComponentProps<"header">
 >(({ className, ...props }, _ref) => {
@@ -36,10 +38,18 @@ export function Header({ title, end, withBack = true }: Props) {
             </div>
             <div className='flex items-center gap-2'>
                 {end}
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                    <BellIcon className="h-4 w-4" />
-                    <span className="sr-only">Toggle notifications</span>
-                </Button>
+
+                <Popover>
+                    <PopoverContent className="h-64" align="end">
+                        <Notifications />
+                    </PopoverContent>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="icon" className="h-8 w-8">
+                            <BellIcon className="h-4 w-4" />
+                            <span className="sr-only">Toggle notifications</span>
+                        </Button>
+                    </PopoverTrigger>
+                </Popover>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="secondary" size="icon" className="rounded-full">
