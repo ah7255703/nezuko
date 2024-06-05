@@ -10,6 +10,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { BackButton } from "./BackButton";
 
 export const HeaderShell = forwardRef<ElementRef<"header">, ComponentProps<"header">
 >(({ className, ...props }, _ref) => {
@@ -18,12 +19,17 @@ export const HeaderShell = forwardRef<ElementRef<"header">, ComponentProps<"head
 
 type Props = {
     title?: string;
-    end?: ReactNode
+    end?: ReactNode;
+    withBack?: boolean;
 }
-export function Header({ title, end }: Props) {
+export function Header({ title, end, withBack = true }: Props) {
+
     return <HeaderShell>
         <div className='flex items-center justify-between gap-2 w-full'>
-            <div className='flex-1'>
+            <div className='flex-1 flex items-center gap-2'>
+                {
+                    withBack && <BackButton />
+                }
                 {
                     title ? <h1 className='text-lg font-semibold md:text-2xl'>{title}</h1> : null
                 }

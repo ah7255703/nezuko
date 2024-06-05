@@ -89,6 +89,16 @@ const routes = app
   .get("/health", async (ctx) => {
     return ctx.json({ status: "ok" })
   })
+  .get("/proxy", async (ctx) => {
+    const query = ctx.req.query();
+    const res = await fetch(query.url);
+    ctx.res.headers.set('Content-Type', 'text/html');
+    ctx.res.headers.set('X-Frame-Options', 'ALLOWALL');
+    ctx.res.headers.set('Access-Control-Allow-Origin', '*');
+    ctx.res.headers.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    ctx.res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    return ctx.html(await res.text())
+  })
 
 export type BackendRoutes = typeof routes
 async function preStart() {

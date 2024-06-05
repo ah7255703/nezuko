@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
 import { HomeIcon, SettingsIcon } from "lucide-react";
-import { NavLink } from '@ui/NavLink';
 import { UserCard } from './UserCard';
+import { NavLink } from '../NavLink';
 
 export function PrivateAside() {
     return (

@@ -45,7 +45,7 @@ export const UrlInput = ({ value, onChange }: {
         <div ref={inputRef}
             onClick={() => setHasFocus(true)}
             onBlur={() => setHasFocus(false)}
-            className={cn('w-full flex-1 outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")} >
+            className={cn('w-full h-fit p-2 flex-1 outline-none text-base font-medium font-mono', isValid ? "" : "text-destructive")} >
             {
                 urlParts ? (
                     <div>

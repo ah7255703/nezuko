@@ -35,11 +35,11 @@ export default function ProjectIndexPage() {
 
     return (
         <div className='flex flex-row size-full p-4 gap-2 flex-1 max-h-full overflow-auto'>
-            <aside className={cn('h-full w-full max-w-sm', isSettingsOpen ? "static" : "absolute -translate-x-[120%]")}>
+            <aside className={cn('h-full w-full max-w-sm block', isSettingsOpen ? "static" : "absolute -translate-x-[120%]")}>
                 <ProjectSettingsPenel />
             </aside>
             <main className='w-full flex flex-col size-full flex-1 h-full'>
-                <div className='rounded-lg border w-full bg-muted/50 flex flex-row items-center gap-2 p-2.5'>
+                <div className='rounded-lg border w-full bg-muted/50 flex flex-row items-center gap-2 p-1'>
                     <UrlInput value={state.request.url} onChange={(value) => {
                         dispatch({
                             type: 'setRequest',
@@ -157,6 +157,5 @@ export default function ProjectIndexPage() {
                 </footer>
             </main>
         </div>
-
     )
 }
