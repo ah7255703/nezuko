@@ -6,8 +6,8 @@ import { sendMessage } from "webext-bridge/devtools";
 function App() {
     return <div>
         <button className="p-2" onClick={async () => {
-            await sendMessage("get-preferences", {});
-            await sendMessage("get-preferences", {}, {
+            await sendMessage("ping", {});
+            await sendMessage("ping", {}, {
                 context: "content-script",
                 tabId: browser.devtools.inspectedWindow.tabId,
             });

@@ -1,5 +1,5 @@
+import "webext-bridge/background";
 import { onMessage } from "webext-bridge/background";
-
 
 export default defineBackground({
   type: "module",
