@@ -1,12 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [
-    "**/.env.*local"
+    ".env"
   ],
   "globalEnv": [
-    "PORT"
+    "*"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "outputs": [
         "dist/**",
