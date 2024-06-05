@@ -16,6 +16,7 @@ import { processWebpage } from './scraper/index.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { cacheService } from './services/redis.service.js'
+import { sum } from "hmd";
 
 const app = new Hono<Env>({
   strict: true,
@@ -87,7 +88,8 @@ const routes = app
   .route("/events", sseRoutes)
   .route("/project", publicRoutes)
   .get("/health", async (ctx) => {
-    return ctx.json({ status: "ok" })
+    const sums = sum(1, 2);
+    return ctx.json({ status: "ok", sum: sums })
   })
   .get("/proxy", async (ctx) => {
     const query = ctx.req.query();
