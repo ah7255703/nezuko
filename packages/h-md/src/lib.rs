@@ -1,6 +1,9 @@
 #![deny(clippy::all)]
 use html2text as html2text;
- 
+use process_webpage::{process_webpage, Options};
+mod special_tokens;
+mod process_webpage;
+mod post_process;
 
 #[macro_use]
 extern crate napi_derive;
@@ -12,6 +15,15 @@ pub fn html_to_text(html: String) -> String {
 }
 
 #[napi]
-pub fn sum(a: i32, b: i32) -> i32 {
-  a + b
+pub async fn process(options: Options, schema: String) -> String {
+  let schema_value = serde_json::from_str(&schema).unwrap();
+  let result = process_webpage(options,schema_value).await;
+  match result {
+    Ok(value) => {
+      return value.to_string();
+    }
+    Err(e) => {
+      panic!("Error: {:?}", e);
+    }
+  }
 }
