@@ -49,7 +49,7 @@ export default function ProjectIndexPage() {
                     />
                     <div>
                         <Button size='sm' onClick={async () => {
-                            const req = await clientApiReq.secured.projects[':projectId'].try_rust.$post({
+                            const req = await clientApiReq.secured.projects[':projectId'].try.$post({
                                 param: {
                                     projectId: project.id
                                 },

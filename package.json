@@ -15,6 +15,10 @@
     "db:mig": "env-cmd -- pnpm -F napi migrate",
     "db:studio": "env-cmd -- pnpm -F napi studio"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ah7255703/nezuko"
+  },
   "dependencies": {
     "env-cmd": "^10.1.0"
   },
