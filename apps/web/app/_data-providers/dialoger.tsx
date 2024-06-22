@@ -72,11 +72,12 @@ export {
 export function Dialoger(
 ) {
     const { dialoger } = useDialoger()
-    const { dialogs } = useStore(dialoger)
+    const { dialogs } = useStore(dialoger);
+    console.log(dialogs)
     return <>
         {
-            dialogs.map((dialog, i) => {
-                return <AlertDialog key={i} open={dialog.open} onOpenChange={(open) => {
+            dialogs.map((dialog) => {
+                return <AlertDialog key={dialog.id} open={dialog.open} onOpenChange={(open) => {
                     if (dialog.onConfirm || dialog.onCancel) {
                         return;
                     }

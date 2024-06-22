@@ -12,8 +12,11 @@ import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form";
 import { Field, Form } from "@/components/ui/form";
 import { loginUser } from "@/app/actions/auth";
+import { useGetSavedProfile } from "@/app/_components/SaveLoginInfo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function LoginPage() {
+    const savedProfile = useGetSavedProfile();
     const form = useForm({
         defaultValues: {
             email: "",
@@ -36,6 +39,19 @@ export default function LoginPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                {savedProfile && (
+                    <div className="mb-3 ">
+                        <span className="uppercase text-xs font-semibold mb-1 block">saved profile</span>
+                        <div onClick={() => {
+                        }} className="flex items-center p-2 rounded-lg bg-muted/20 gap-2">
+                            <Avatar>
+                                <AvatarImage src={savedProfile?.image || ''} />
+                                <AvatarFallback>{savedProfile?.name.at(0)}</AvatarFallback>
+                            </Avatar>
+                            <h2 className="text-sm font-medium">{savedProfile?.name}</h2>
+                        </div>
+                    </div>
+                )}
                 <Form {...form}>
                     <form className="contents" onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4">
@@ -52,11 +68,8 @@ export default function LoginPage() {
                                 render={(f) => <Input {...f} type='password' />}
                             />
 
-                            <Button type="submit" className="w-full">
+                            <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">
                                 Login
-                            </Button>
-                            <Button variant="outline" className="w-full">
-                                Login with Google
                             </Button>
                         </div>
                         <div className="mt-4 text-center text-sm">

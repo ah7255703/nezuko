@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import _, { cloneDeep, set as lodashSet } from 'lodash'
 import { IS_SERVER } from "@/utils/constants";
 import { createSafeContext } from "@/utils/create-safe-context";
+import z from "zod";
 
 const [SafeAppConfigProvider, useAppConfig] = createSafeContext<{
     state: Record<string, any>;
     set: <T extends any = unknown> (path: string, value: T) => void;
-    get: <T extends any = unknown>(path: string) => T;
+    get: <T extends any = unknown>(path: string) => T | undefined;
 }>("");
 
 type StorageType = "local" | "session";
@@ -15,17 +16,32 @@ type StorageType = "local" | "session";
 const STORAGE_TYPE: StorageType = "local"
 
 const KEY = "app-config";
+
 const SYNC_TO_LOCAL_STORAGE = true;
+
+const DEFAULT_ZODA_SCHEMA = z.record(z.any());
 
 function getInitialData(storageType: StorageType, key: string) {
     if (IS_SERVER) return {};
     const storage = storageType === "local" ? localStorage : sessionStorage;
-    const data = storage.getItem(key);
-    return data ? JSON.parse(data) : {};
+    let data: z.infer<typeof DEFAULT_ZODA_SCHEMA> = {};
+    try {
+        let dataString = storage.getItem(key);
+        if (dataString) {
+            let valid = DEFAULT_ZODA_SCHEMA.safeParse(JSON.parse(dataString));
+            if (valid.success) {
+                data = valid.data;
+            }
+        }
+    }
+    catch (e) {
+        console.error(e);
+    }
+    return data;
 }
 
 function AppConfigProvider({ children }: { children: React.ReactNode }) {
-    const [state, setState] = useState<Record<string, any>>(getInitialData(STORAGE_TYPE, KEY));
+    const [state, setState] = useState(getInitialData(STORAGE_TYPE, KEY));
     const set = React.useCallback((path: string, value: any) => {
         setState((prev) => {
             const newState = cloneDeep(prev);

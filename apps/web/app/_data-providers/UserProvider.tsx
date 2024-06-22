@@ -20,9 +20,9 @@ function UserProvider({ children }: { children: ReactNode }) {
     const user = useSWR(session?.accessToken, async () => {
         const req = await clientApiReq.secured.whoami.$get();
         if (req.status === 401) {
-            refreshToken()
+            refreshToken({})
         } else {
-            return req.json()
+            return await req.json()
         }
     })
     return <UserSafeProvider
