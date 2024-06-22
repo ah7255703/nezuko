@@ -6,8 +6,6 @@ import { SettingsIcon } from 'lucide-react'
 import React from 'react'
 import { useProject } from '../ProjectProvider'
 import CodeMirror from "@uiw/react-codemirror";
-import { githubDark } from '@uiw/codemirror-theme-github'
-import { basicDark } from '@uiw/codemirror-theme-basic'
 import { basicSetup } from '@uiw/codemirror-extensions-basic-setup'
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter } from '@codemirror/lint';
@@ -51,7 +49,7 @@ export default function ProjectIndexPage() {
                     />
                     <div>
                         <Button size='sm' onClick={async () => {
-                            const req = await clientApiReq.secured.projects[':projectId'].try.$post({
+                            const req = await clientApiReq.secured.projects[':projectId'].try_rust.$post({
                                 param: {
                                     projectId: project.id
                                 },
@@ -78,7 +76,7 @@ export default function ProjectIndexPage() {
                             <CodeMirror
                                 className='first:size-full text-base'
                                 value={state.schema.value}
-                                onChange={(value) => {
+                                onChange={(value: string) => {
                                     dispatch({
                                         type: "setSchema",
                                         payload: {
@@ -87,14 +85,14 @@ export default function ProjectIndexPage() {
                                     })
                                 }}
                                 height='100%'
-                                extensions={[githubDark, basicSetup({
+                                extensions={[basicSetup({
                                     lineNumbers: false,
                                     autocompletion: true,
                                     closeBrackets: true,
                                     foldGutter: false
                                 }),
-                                    json(),
-                                    linter(jsonParseLinter())
+                                json(),
+                                linter(jsonParseLinter())
                                 ]}
                                 theme="dark"
                                 basicSetup={{
@@ -112,7 +110,7 @@ export default function ProjectIndexPage() {
                                 value={state.state.lastResponse || ''}
                                 readOnly
                                 height='100%'
-                                extensions={[basicDark, basicSetup({
+                                extensions={[basicSetup({
                                     lineNumbers: false,
                                     autocompletion: true,
                                 }), json()]}

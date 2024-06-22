@@ -3,7 +3,6 @@ import React from "react";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { basicSetup } from "@uiw/codemirror-extensions-basic-setup";
-import { basicDark } from "@uiw/codemirror-theme-basic";
 import CodeMirror from "@uiw/react-codemirror";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
@@ -43,7 +42,7 @@ export function ResponseShape() {
                         readOnly
                         value={responsesJson.data?.responseShape ?? ""}
                         height='100%'
-                        extensions={[basicDark, basicSetup({
+                        extensions={[basicSetup({
                             lineNumbers: false,
                             autocompletion: true,
                             closeBrackets: true,
@@ -58,7 +57,7 @@ export function ResponseShape() {
                         readOnly
                         value={responsesJson.data?.responseTsInterface ?? ""}
                         height='100%'
-                        extensions={[basicDark, basicSetup({
+                        extensions={[basicSetup({
                             lineNumbers: false,
                             autocompletion: true,
                             closeBrackets: true,

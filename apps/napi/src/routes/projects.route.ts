@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { Env } from "../types";
 import { db } from "@db/index";
-import { and, count, eq, getTableName, sql, sum, } from "drizzle-orm";
+import { and, count, eq, sql, sum, } from "drizzle-orm";
 import { project, projectResponse, updateProjectSchema } from "@db/schema";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { processWebpage } from "../scraper";
 import { pushStoreResponseTask } from "../tasks/storeResponse.task";
+import { processWeb } from "hmd";
 
 const route = new Hono<Env>()
     .get(':orgId/getAll', async (ctx) => {
@@ -64,6 +65,27 @@ const route = new Hono<Env>()
         await pushStoreResponseTask({
             projectId,
             response: response,
+            env: "test"
+        })
+        return ctx.json({
+            $_response: response,
+        });
+    })
+    .post(':projectId/try_rust', zValidator("json", z.object({
+        schemaString: z.string(),
+        request: z.object({
+            method: z.string(),
+            url: z.string()
+        })
+    })), async (ctx) => {
+        const { projectId } = ctx.req.param();
+        const { schemaString, request } = ctx.req.valid('json');
+        let response = await processWeb({
+            url: request.url,
+        }, schemaString);
+        await pushStoreResponseTask({
+            projectId,
+            response: JSON.parse(response) as any,
             env: "test"
         })
         return ctx.json({

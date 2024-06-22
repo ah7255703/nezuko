@@ -16,7 +16,6 @@ import { processWebpage } from './scraper/index.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { cacheService } from './services/redis.service.js'
-import { htmlToText } from "hmd";
 
 const app = new Hono<Env>({
   strict: true,

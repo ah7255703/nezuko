@@ -310,7 +310,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { htmlToText, sum } = nativeBinding
+const { htmlToText, processWeb } = nativeBinding
 
 module.exports.htmlToText = htmlToText
-module.exports.sum = sum
+module.exports.processWeb = processWeb
